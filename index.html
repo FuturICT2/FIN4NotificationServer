@@ -10,6 +10,7 @@
     <script>
         $(() => {
             let socket = io();
+            socket.emit('register', '0x36b19e2eB04AA07F5160cDBb8EE7624E89ae62e6');
             socket.on('message', msg => {
                 console.log(msg);
             });

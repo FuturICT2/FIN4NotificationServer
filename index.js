@@ -18,15 +18,25 @@ contract.on('TestEvent', (...args) => {
 	io.emit('message', 'TestEvent received');
 });
 
+// active frontends
+let ethAddressToSocketId = {};
+let socketIdToEthAddress = {};
+
 io.on('connection', socket => {
 	console.log('user connected');
+
+	socket.on('register', ethAddress => {
+		ethAddressToSocketId[ethAddress] = socket.id;
+		socketIdToEthAddress[socket.id] = ethAddress;
+		console.log('REGISTERED ethAddress: ' + ethAddress, ' socketId: ', socket.id);
+	});
 
 	socket.on('message', msg => {
 		console.log('message: ' + msg);
 	});
 
 	socket.on('disconnect', () => {
-		console.log('user disconnected');
+		console.log('UNREGISTERED ethAddress: ' + socketIdToEthAddress[socket.id], ' socketId: ', socket.id);
 	});
 });
 
