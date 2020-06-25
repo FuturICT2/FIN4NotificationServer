@@ -1,0 +1,10 @@
+{
+	"name": "fin4-notification-server",
+	"version": "0.1.0",
+	"description": "Forwarding Fin4 contract events to connected clients, email subscribers and a telegram bot",
+	"dependencies": {
+		"ethers": "^5.0.2",
+		"express": "^4.17.1",
+		"socket.io": "^2.3.0"
+	}
+}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <title>FIN4Xplorer Notification Server</title>
+  </head>
+  <body>
+    <button id="btn">dev</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        $(() => {
+            let socket = io();
+            socket.on('message', msg => {
+                console.log(msg);
+            });
+            $('#btn').click(function(){
+                socket.emit('message', 'test123');
+            }); 
+        });
+      </script>
+  </body>
+</html>
