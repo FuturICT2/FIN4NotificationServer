@@ -23,6 +23,7 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	Fin4TokenManagementContract.on('Fin4TokenCreated', (...args) => {
 		let values = args.pop().args;
 		console.log('Received Fin4TokenCreated Event from Fin4TokenManagement contract', values);
+		io.emit('Fin4TokenCreated', values);
 	});
 
 	// 3 Fin4Claiming
@@ -65,6 +66,10 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	Fin4MessagingContract.on('NewMessage', (...args) => {
 		let values = args.pop().args;
 		console.log('Received NewMessage Event from Fin4Messaging contract', values);
+		let socket = getSocket(values.receiver);
+		if (socket) {
+			socket.emit('NewMessage', values);
+		}
 	});
 	Fin4MessagingContract.on('MessageMarkedAsRead', (...args) => {
 		let values = args.pop().args;
@@ -81,10 +86,13 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	});
 });
 
-contract.on('TestEvent', (...args) => {
-	console.log('ethers received TestEvent');
-	io.emit('message', 'TestEvent received');
-});
+const getSocket = ethAddr => {
+	let socketId = ethAddressToSocketId[ethAddr];
+	if (socketId && io.sockets.sockets[socketId]) {
+		return io.sockets.sockets[socketId];
+	}
+	return null;
+};
 
 // active frontends
 let ethAddressToSocketId = {};
