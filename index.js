@@ -29,6 +29,7 @@ io.on('connection', socket => {
 		ethAddressToSocketId[ethAddress] = socket.id;
 		socketIdToEthAddress[socket.id] = ethAddress;
 		console.log('REGISTERED ethAddress: ' + ethAddress, ' socketId: ', socket.id);
+		console.log('Total registered: ' + Object.keys(ethAddressToSocketId).length);
 	});
 
 	socket.on('message', msg => {
@@ -37,6 +38,9 @@ io.on('connection', socket => {
 
 	socket.on('disconnect', () => {
 		console.log('UNREGISTERED ethAddress: ' + socketIdToEthAddress[socket.id], ' socketId: ', socket.id);
+		delete ethAddressToSocketId[socketIdToEthAddress[socket.id]];
+		delete socketIdToEthAddress[socket.id];
+		console.log('Total registered: ' + Object.keys(ethAddressToSocketId).length);
 	});
 });
 
