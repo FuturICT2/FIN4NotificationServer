@@ -16,7 +16,33 @@ const Fin4Main = {
 let Fin4MainContract = new ethers.Contract(Fin4Main.address, Fin4Main.json.abi, provider);
 
 Fin4MainContract.getSatelliteAddresses().then(addresses => {
-	// TODO
+	// 2 Fin4TokenManagement
+	let Fin4TokenManagementContract = new ethers.Contract(
+		addresses[2],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4TokenManagement.json').abi,
+		provider
+	);
+
+	// 3 Fin4Messaging
+	let Fin4MessagingContract = new ethers.Contract(
+		addresses[3],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Messaging.json').abi,
+		provider
+	);
+
+	// 4 Fin4Claiming
+	let Fin4ClaimingContract = new ethers.Contract(
+		addresses[4],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Claiming.json').abi,
+		provider
+	);
+
+	// 6 Fin4Verifying
+	let Fin4VerifyingContract = new ethers.Contract(
+		addresses[6],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Verifying.json').abi,
+		provider
+	);
 });
 
 contract.on('TestEvent', (...args) => {
