@@ -5,8 +5,12 @@ const { ethers } = require('ethers');
 const port = 5000;
 const config = require('./config.json');
 
-// const rinkebyProvider = new ethers.providers.InfuraProvider("rinkeby", config.INFURA_API_KEY)
-const provider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
+let provider;
+if (config.INFURA_API_KEY) {
+	provider = new ethers.providers.InfuraProvider('rinkeby', config.INFURA_API_KEY);
+} else {
+	provider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
+}
 
 const Fin4Main = {
 	json: require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Main.json'),
