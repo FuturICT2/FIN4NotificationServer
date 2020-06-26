@@ -33,30 +33,37 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	Fin4ClaimingContract.on('ClaimSubmitted', (...args) => {
 		let values = args.pop().args;
 		console.log('Received ClaimSubmitted Event from Fin4Claiming contract', values);
+		emitOnSocket(values.claimer, 'ClaimSubmitted', values)
 	});
 	Fin4ClaimingContract.on('ClaimApproved', (...args) => {
 		let values = args.pop().args;
 		console.log('Received ClaimApproved Event from Fin4Claiming contract', values);
+		emitOnSocket(values.claimer, 'ClaimApproved', values)
 	});
 	Fin4ClaimingContract.on('ClaimRejected', (...args) => {
 		let values = args.pop().args;
 		console.log('Received ClaimRejected Event from Fin4Claiming contract', values);
+		emitOnSocket(values.claimer, 'ClaimRejected', values)
 	});
 	Fin4ClaimingContract.on('VerifierPending', (...args) => {
 		let values = args.pop().args;
 		console.log('Received VerifierPending Event from Fin4Claiming contract', values);
+		emitOnSocket(values.claimer, 'VerifierPending', values)
 	});
 	Fin4ClaimingContract.on('VerifierApproved', (...args) => {
 		let values = args.pop().args;
 		console.log('Received VerifierApproved Event from Fin4Claiming contract', values);
+		emitOnSocket(values.claimer, 'VerifierApproved', values)
 	});
 	Fin4ClaimingContract.on('VerifierRejected', (...args) => {
 		let values = args.pop().args;
 		console.log('Received VerifierRejected Event from Fin4Claiming contract', values);
+		emitOnSocket(values.claimer, 'VerifierRejected', values)
 	});
 	Fin4ClaimingContract.on('UpdatedTotalSupply', (...args) => {
 		let values = args.pop().args;
 		console.log('Received UpdatedTotalSupply Event from Fin4Claiming contract', values);
+		io.emit('UpdatedTotalSupply', values);
 	});
 
 	// 5 Fin4Messaging
@@ -71,6 +78,7 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	Fin4MessagingContract.on('MessageMarkedAsRead', (...args) => {
 		let values = args.pop().args;
 		console.log('Received MessageMarkedAsRead Event from Fin4Messaging contract', values);
+		emitOnSocket(values.receiver, 'MessageMarkedAsRead', values)
 	});
 
 	// 6 Fin4Verifying
@@ -80,6 +88,7 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	Fin4VerifyingContract.on('SubmissionAdded', (...args) => {
 		let values = args.pop().args;
 		console.log('Received SubmissionAdded Event from Fin4Verifying contract', values);
+		io.emit('SubmissionAdded', values);
 	});
 });
 
