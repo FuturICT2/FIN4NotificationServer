@@ -3,15 +3,21 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const { ethers } = require('ethers');
 const port = 5000;
+const config = require('./config.json');
 
-// const config = require('./config.json');
 // const rinkebyProvider = new ethers.providers.InfuraProvider("rinkeby", config.INFURA_API_KEY)
 const provider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
 
-const json = require('./DevContract.json');
-const address = '0x2932281766c7AFc07d14A72f3c53e1631f1aC1C6';
+const Fin4Main = {
+	json: require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Main.json'),
+	address: config.FIN4MAIN_ADDRESS
+};
 
-let contract = new ethers.Contract(address, json.abi, provider);
+let Fin4MainContract = new ethers.Contract(Fin4Main.address, Fin4Main.json.abi, provider);
+
+Fin4MainContract.getSatelliteAddresses().then(addresses => {
+	// TODO
+});
 
 contract.on('TestEvent', (...args) => {
 	console.log('ethers received TestEvent');
