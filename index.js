@@ -21,7 +21,7 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4TokenManagement.json').abi, provider
 	);
 	Fin4TokenManagementContract.on('Fin4TokenCreated', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received Fin4TokenCreated Event from Fin4TokenManagement contract', values);
 		io.emit('Fin4TokenCreated', values);
 	});
@@ -31,37 +31,37 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Claiming.json').abi, provider
 	);
 	Fin4ClaimingContract.on('ClaimSubmitted', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received ClaimSubmitted Event from Fin4Claiming contract', values);
 		emitOnSocket(values.claimer, 'ClaimSubmitted', values)
 	});
 	Fin4ClaimingContract.on('ClaimApproved', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received ClaimApproved Event from Fin4Claiming contract', values);
 		emitOnSocket(values.claimer, 'ClaimApproved', values)
 	});
 	Fin4ClaimingContract.on('ClaimRejected', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received ClaimRejected Event from Fin4Claiming contract', values);
 		emitOnSocket(values.claimer, 'ClaimRejected', values)
 	});
 	Fin4ClaimingContract.on('VerifierPending', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received VerifierPending Event from Fin4Claiming contract', values);
 		emitOnSocket(values.claimer, 'VerifierPending', values)
 	});
 	Fin4ClaimingContract.on('VerifierApproved', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received VerifierApproved Event from Fin4Claiming contract', values);
 		emitOnSocket(values.claimer, 'VerifierApproved', values)
 	});
 	Fin4ClaimingContract.on('VerifierRejected', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received VerifierRejected Event from Fin4Claiming contract', values);
 		emitOnSocket(values.claimer, 'VerifierRejected', values)
 	});
 	Fin4ClaimingContract.on('UpdatedTotalSupply', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received UpdatedTotalSupply Event from Fin4Claiming contract', values);
 		io.emit('UpdatedTotalSupply', values);
 	});
@@ -71,12 +71,12 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Messaging.json').abi, provider
 	);
 	Fin4MessagingContract.on('NewMessage', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received NewMessage Event from Fin4Messaging contract', values);
 		emitOnSocket(values.receiver, 'NewMessage', values)
 	});
 	Fin4MessagingContract.on('MessageMarkedAsRead', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received MessageMarkedAsRead Event from Fin4Messaging contract', values);
 		emitOnSocket(values.receiver, 'MessageMarkedAsRead', values)
 	});
@@ -86,11 +86,34 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Verifying.json').abi, provider
 	);
 	Fin4VerifyingContract.on('SubmissionAdded', (...args) => {
-		let values = args.pop().args;
+		let values = extractValues(args);
 		console.log('Received SubmissionAdded Event from Fin4Verifying contract', values);
 		io.emit('SubmissionAdded', values);
 	});
 });
+
+const extractValues = args => {
+	/*
+	Rearranging the contract event data like this seems necessary
+	because it arrives as a mix of array and object:
+
+	0: 0x...
+	1: 1
+	tokenAddr: 0x...
+	claimId: 1
+
+	When I sent this to the frontend or use JSON.stringify(), it keeps
+	only the array-part and the keys are lost. I want to pass them though.
+	*/
+	let raw = args.pop().args;
+	let values = {};
+	Object.keys(raw).map(key => {
+		if (isNaN(key)) { // keep it only if the key is not a number
+			values[key] = raw[key];
+		}
+	});
+	return values;
+};
 
 const emitOnSocket = (ethAddr, type, values) => {
 	let socket = getSocket(ethAddr);
