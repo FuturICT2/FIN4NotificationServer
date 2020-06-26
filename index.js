@@ -66,10 +66,7 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	Fin4MessagingContract.on('NewMessage', (...args) => {
 		let values = args.pop().args;
 		console.log('Received NewMessage Event from Fin4Messaging contract', values);
-		let socket = getSocket(values.receiver);
-		if (socket) {
-			socket.emit('NewMessage', values);
-		}
+		emitOnSocket(values.receiver, 'NewMessage', values)
 	});
 	Fin4MessagingContract.on('MessageMarkedAsRead', (...args) => {
 		let values = args.pop().args;
@@ -85,6 +82,13 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		console.log('Received SubmissionAdded Event from Fin4Verifying contract', values);
 	});
 });
+
+const emitOnSocket = (ethAddr, type, values) => {
+	let socket = getSocket(ethAddr);
+	if (socket) {
+		socket.emit(type, values);
+	}
+};
 
 const getSocket = ethAddr => {
 	let socketId = ethAddressToSocketId[ethAddr];
