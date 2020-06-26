@@ -17,32 +17,68 @@ let Fin4MainContract = new ethers.Contract(Fin4Main.address, Fin4Main.json.abi, 
 
 Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	// 2 Fin4TokenManagement
-	let Fin4TokenManagementContract = new ethers.Contract(
-		addresses[2],
-		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4TokenManagement.json').abi,
-		provider
+	let Fin4TokenManagementContract = new ethers.Contract(addresses[2],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4TokenManagement.json').abi, provider
 	);
+	Fin4TokenManagementContract.on('Fin4TokenCreated', (...args) => {
+		let values = args.pop().args;
+		console.log('Received Fin4TokenCreated Event from Fin4TokenManagement contract', values);
+	});
 
-	// 3 Fin4Messaging
-	let Fin4MessagingContract = new ethers.Contract(
-		addresses[3],
-		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Messaging.json').abi,
-		provider
+	// 3 Fin4Claiming
+	let Fin4ClaimingContract = new ethers.Contract(addresses[3],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Claiming.json').abi, provider
 	);
+	Fin4ClaimingContract.on('ClaimSubmitted', (...args) => {
+		let values = args.pop().args;
+		console.log('Received ClaimSubmitted Event from Fin4Claiming contract', values);
+	});
+	Fin4ClaimingContract.on('ClaimApproved', (...args) => {
+		let values = args.pop().args;
+		console.log('Received ClaimApproved Event from Fin4Claiming contract', values);
+	});
+	Fin4ClaimingContract.on('ClaimRejected', (...args) => {
+		let values = args.pop().args;
+		console.log('Received ClaimRejected Event from Fin4Claiming contract', values);
+	});
+	Fin4ClaimingContract.on('VerifierPending', (...args) => {
+		let values = args.pop().args;
+		console.log('Received VerifierPending Event from Fin4Claiming contract', values);
+	});
+	Fin4ClaimingContract.on('VerifierApproved', (...args) => {
+		let values = args.pop().args;
+		console.log('Received VerifierApproved Event from Fin4Claiming contract', values);
+	});
+	Fin4ClaimingContract.on('VerifierRejected', (...args) => {
+		let values = args.pop().args;
+		console.log('Received VerifierRejected Event from Fin4Claiming contract', values);
+	});
+	Fin4ClaimingContract.on('UpdatedTotalSupply', (...args) => {
+		let values = args.pop().args;
+		console.log('Received UpdatedTotalSupply Event from Fin4Claiming contract', values);
+	});
 
-	// 4 Fin4Claiming
-	let Fin4ClaimingContract = new ethers.Contract(
-		addresses[4],
-		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Claiming.json').abi,
-		provider
+	// 5 Fin4Messaging
+	let Fin4MessagingContract = new ethers.Contract(addresses[5],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Messaging.json').abi, provider
 	);
+	Fin4MessagingContract.on('NewMessage', (...args) => {
+		let values = args.pop().args;
+		console.log('Received NewMessage Event from Fin4Messaging contract', values);
+	});
+	Fin4MessagingContract.on('MessageMarkedAsRead', (...args) => {
+		let values = args.pop().args;
+		console.log('Received MessageMarkedAsRead Event from Fin4Messaging contract', values);
+	});
 
 	// 6 Fin4Verifying
-	let Fin4VerifyingContract = new ethers.Contract(
-		addresses[6],
-		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Verifying.json').abi,
-		provider
+	let Fin4VerifyingContract = new ethers.Contract(addresses[6],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Verifying.json').abi, provider
 	);
+	Fin4VerifyingContract.on('SubmissionAdded', (...args) => {
+		let values = args.pop().args;
+		console.log('Received SubmissionAdded Event from Fin4Verifying contract', values);
+	});
 });
 
 contract.on('TestEvent', (...args) => {
