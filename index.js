@@ -113,7 +113,11 @@ const extractValues = (contractName, args) => {
 	let values = {};
 	Object.keys(raw).map(key => {
 		if (isNaN(key)) { // keep it only if the key is not a number
-			values[key] = raw[key];
+			let value = raw[key];
+			if (value._isBigNumber) {
+				value = value.toString();
+			}
+			values[key] = value;
 		}
 	});
 	values['contractName'] = contractName;
