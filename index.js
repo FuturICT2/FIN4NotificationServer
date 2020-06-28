@@ -12,12 +12,11 @@ if (config.INFURA_API_KEY) {
 	provider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
 }
 
-const Fin4Main = {
-	json: require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Main.json'),
-	address: config.FIN4MAIN_ADDRESS
-};
-
-let Fin4MainContract = new ethers.Contract(Fin4Main.address, Fin4Main.json.abi, provider);
+let Fin4MainContract = new ethers.Contract(
+	config.FIN4MAIN_ADDRESS, 
+	require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Main.json').abi, 
+	provider
+);
 
 Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	// 2 Fin4TokenManagement
