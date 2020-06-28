@@ -5,6 +5,8 @@ const { ethers } = require('ethers');
 const port = 5000;
 const config = require('./config.json');
 
+// ------------------------ CONTRACT EVENT SUBSCRIPTIONS ------------------------
+
 let provider;
 if (config.INFURA_API_KEY) {
 	provider = new ethers.providers.InfuraProvider('rinkeby', config.INFURA_API_KEY);
@@ -68,6 +70,8 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	});
 });
 
+// ------------------------ HELPER METHODS ------------------------
+
 const extractValues = (contractName, args) => {
 	/*
 	Rearranging the contract event data like this seems necessary
@@ -95,6 +99,8 @@ const extractValues = (contractName, args) => {
 	values['contractName'] = contractName;
 	return values;
 };
+
+// ------------------------ SOCKET ------------------------
 
 const emitOnSocket = (ethAddr, type, values) => {
 	let socket = getSocket(ethAddr);
@@ -137,9 +143,13 @@ io.on('connection', socket => {
 	});
 });
 
+// ------------------------ SERVE HTML ------------------------
+
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
 });
+
+// ------------------------ START SERVER ------------------------
 
 http.listen(port, () => {
 	console.log('listening on port: ', port);
