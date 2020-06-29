@@ -160,6 +160,10 @@ let ethAddressToTelegramUser = {};
 
 bot.command('start', ctx => {
 	let id = ctx.chat.id;
+	if (activeTelegramUsers[id]) {
+		ctx.reply('Oha, it seems I already knew you, please run /stop first if you want to restart');
+		return;
+	}
 	activeTelegramUsers[id] = {
 		ethAddress: null
 	};
@@ -170,6 +174,10 @@ bot.command('start', ctx => {
 // enable this command via the BotFather on
 bot.command('stop', ctx => {
 	let id = ctx.chat.id;
+	if (!activeTelegramUsers[id]) {
+		ctx.reply('Ups, I don\'t think I know you yet, please run the /start command first');
+		return;
+	}
 	let ethAddress = activeTelegramUsers[id].ethAddress;
 	if (ethAddress) {
 		delete ethAddressToTelegramUser[ethAddress];
