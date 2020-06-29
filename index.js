@@ -225,8 +225,8 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			text = () => {
 				let tokenInfo = tokenInfos[values.tokenAddr];
 				if (eventName === 'ClaimApproved') {
-					return 'Your claim of ' + values.mintedQuantity + ' on token ' + formatToken(tokenInfo)
-						+ ' was successful, your new balance on this token is ' + values.newBalance;
+					return 'Your claim of `' + values.mintedQuantity + '` on token ' + formatToken(tokenInfo)
+						+ ' was successful, your new balance on this token is `' + values.newBalance + '`';
 				}
 				if (eventName === 'ClaimRejected') {
 					return 'Your claim  on token ' + formatToken(tokenInfo) + ' got rejected';
