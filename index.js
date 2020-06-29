@@ -107,6 +107,10 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		contracts[contractName].on(eventName, (...args) => {
 			let values = extractValues(contractName, args);
 			console.log('Received ' + eventName + ' Event from ' + contractName + ' contract', values);
+			
+			// TODO add barrier to avoid sending events from before starting this server
+			// a blocked time at the beginning maybe?
+
 			if (audience === 'all') {
 				sendToAll(eventName, values);
 			} else {
