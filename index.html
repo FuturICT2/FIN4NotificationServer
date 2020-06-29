@@ -4,22 +4,45 @@
     <title>FIN4Xplorer Notification Server</title>
   </head>
   <body>
-    <button id="btn">dev</button>
+    <table>
+        <tbody>
+          <tr>
+            <td>
+              Your email address:
+            </td>
+            <td>
+              <input type="text" id="email">
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Your Ethereum public address:
+            </td>
+            <td>
+              <input type="text" id="ethAddress">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input id="submitBtn" type="submit" value="Submit">
+            </td>
+          </tr>
+        </tbody>
+    </table>
+    <br>
+    You can also use our <a href="https://t.me/FIN4Notifications_bot">Telegram bot</a> to subscribe to events.
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script>
         $(() => {
             let socket = io();
-            socket.emit('register', '0x36b19e2eB04AA07F5160cDBb8EE7624E89ae62e6');
-            socket.on('Fin4TokenCreated', msg => {
-                console.log(msg);
-            });
+            socket.emit('email-signup', 'email, ethAddress');
             socket.on('NewMessage', msg => {
                 console.log(msg);
             });
-            $('#btn').click(function(){
+            $('#submitBtn').click(() => {
                 socket.emit('message', 'test123');
-            }); 
+            });
         });
       </script>
   </body>
