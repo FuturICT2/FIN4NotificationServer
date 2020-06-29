@@ -187,11 +187,25 @@ const fetchTokenInfo = (tokenAddr, done) => {
 	});
 };
 
+const fetchVerifierInfo = (verifierAddr, done) => {
+	if (verifierInfos[verifierAddr]) {
+		done();
+		return;
+	}
+	contracts.Fin4Verifying.getVerifierTypeInfo(verifierAddr).then(({ 0: contractName }) => { // TODO use 1: nameTransKey
+		verifierInfos[verifierAddr] = {
+			contractName: contractName
+		};
+		done();
+	});
+};
+
 const formatToken = obj => {
 	return '`[' + obj.symbol + '] ' + obj.name + '`';
 };
 
 const tokenInfos = {};
+const verifierInfos = {};
 
 const buildMessage = (eventName, values, toAll, callback) => {
 	// let intro = 'A message from the ' + values.contractName + ' contract to ' + (toAll ? 'all' : 'you') + ':\n';
@@ -222,10 +236,18 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			});
 			break;
 		case 'VerifierApproved':
-			callback('Verifier approved');
-			break;
 		case 'VerifierRejected':
-			callback('Verifier rejected');
+			let text = () => {
+				let tokenInfo = tokenInfos[values.tokenAddrToReceiveVerifierNotice];
+				let verifierName = verifierInfos[values.verifierTypeAddress];
+				return 'The verifier '  + verifierName + ' ' + (eventName === 'VerifierApproved' ? 'approved' : 'rejected')
+					+ ' the provided proof for your claim on token ' + formatToken(tokenInfo);
+			};
+			fetchTokenInfo(values.tokenAddrToReceiveVerifierNotice, () => {
+				fetchVerifierInfo(values.verifierTypeAddress, () => {
+					callback(text());
+				});
+			});
 			break;
 		case 'NewMessage':
 			message = '';
