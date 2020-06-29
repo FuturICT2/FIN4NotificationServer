@@ -23,19 +23,63 @@ let Fin4MainContract = new ethers.Contract(
 	provider
 );
 
-let contractEventList = [
-	['Fin4TokenManagement', 'Fin4TokenCreated', 'all'],
-	['Fin4Claiming', 'ClaimSubmitted', 'claimer'],
-	['Fin4Claiming', 'ClaimApproved', 'claimer'],
-	['Fin4Claiming', 'ClaimRejected', 'claimer'],
-	['Fin4Claiming', 'UpdatedTotalSupply', 'claimer'],
-	['Fin4Claiming', 'VerifierPending', 'claimer'],
-	['Fin4Claiming', 'VerifierApproved', 'claimer'],
-	['Fin4Claiming', 'VerifierRejected', 'claimer'],
-	['Fin4Messaging', 'NewMessage', 'receiver'],
-	['Fin4Messaging', 'MessageMarkedAsRead', 'receiver'],
-	['Fin4Verifying', 'SubmissionAdded', 'all']
-];
+let contractEvents = {
+	Fin4TokenCreated: {
+		contractName: 'Fin4TokenManagement',
+		audience: 'all',
+		sendAsMessage: true
+	},
+	ClaimSubmitted: {
+		contractName: 'Fin4Claiming',
+		audience: 'claimer',
+		sendAsMessage: false
+	},
+	ClaimApproved: {
+		contractName: 'Fin4Claiming',
+		audience: 'claimer',
+		sendAsMessage: true
+	},
+	ClaimRejected: {
+		contractName: 'Fin4Claiming',
+		audience: 'claimer',
+		sendAsMessage: true
+	},
+	UpdatedTotalSupply: {
+		contractName: 'Fin4Claiming',
+		audience: 'claimer',
+		sendAsMessage: false
+	},
+	VerifierPending: {
+		contractName: 'Fin4Claiming',
+		audience: 'claimer',
+		sendAsMessage: false
+	},
+	VerifierApproved: {
+		contractName: 'Fin4Claiming',
+		audience: 'claimer',
+		sendAsMessage: true
+	},
+	VerifierRejected: {
+		contractName: 'Fin4Claiming',
+		audience: 'claimer',
+		sendAsMessage: true
+	},
+	NewMessage: {
+		contractName: 'Fin4Messaging',
+		audience: 'receiver',
+		sendAsMessage: true
+	},
+	MessageMarkedAsRead: {
+		contractName: 'Fin4Messaging',
+		audience: 'receiver',
+		sendAsMessage: false
+	},
+	SubmissionAdded: {
+		contractName: 'Fin4Verifying',
+		audience: 'all',
+		sendAsMessage: false
+	}
+};
 
 Fin4MainContract.getSatelliteAddresses().then(addresses => {
 	let contracts = {
@@ -57,10 +101,9 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		)
 	};
 
-	contractEventList.map(entry => {
-		let contractName = entry[0];
-		let eventName = entry[1];
-		let audience = entry[2];
+	Object.keys(contractEvents).map(eventName => {
+		let contractName = contractEvents[eventName].contractName;
+		let audience = contractEvents[eventName].audience;
 		contracts[contractName].on(eventName, (...args) => {
 			let values = extractValues(contractName, args);
 			console.log('Received ' + eventName + ' Event from ' + contractName + ' contract', values);
