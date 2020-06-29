@@ -112,10 +112,15 @@ const isValidAddress = addr => {
 
 const sendToAll = (eventName, values) => {
 	io.emit(eventName, values);
+	Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, 'Event: ' + eventName));
 };
 
 const sendToUser = (ethAddress, eventName, values) => {
 	emitOnSocket(ethAddress, eventName, values);
+	let telegramUser = ethAddressToTelegramUser[ethAddress];
+	if (telegramUser) {
+		bot.telegram.sendMessage(telegramUser, 'Event: ' + eventName);
+	}
 };
 
 // ------------------------ SOCKET ------------------------
