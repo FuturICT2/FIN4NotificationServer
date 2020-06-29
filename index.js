@@ -101,6 +101,13 @@ const extractValues = (contractName, args) => {
 	return values;
 };
 
+const isValidAddress = addr => {
+	try {
+		ethers.utils.getAddress(addr);
+	} catch (e) { return false; }
+	return true;
+};
+
 // ------------------------ SOCKET ------------------------
 
 const emitOnSocket = (ethAddr, type, values) => {
@@ -149,6 +156,7 @@ io.on('connection', socket => {
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
 
 let activeTelegramUsers = {};
+let ethAddressToTelegramUser = {};
 
 bot.command('start', ctx => {
 	let id = ctx.chat.id;
@@ -156,14 +164,41 @@ bot.command('start', ctx => {
 		ethAddress: null
 	};
 	console.log('Telegram user ' + id + ' has connected');
-	return ctx.reply('Welcome to the FIN4Notifications bot!');
+	return ctx.reply('Welcome to the FIN4Notifications bot! From now on you will receive notifications when a new token is created. If you also want notifications concerning your account (claim approval etc.), please share your public Ethereum address in the format "my-address 0x...". Note that you thereby allow a link to be made between your Telegram identity and your Ethereum address. That info lives only in the database of the notification server, but servers can be hacked.');
 });
 
 // enable this command via the BotFather on
 bot.command('stop', ctx => {
 	let id = ctx.chat.id;
+	let ethAddress = activeTelegramUsers[id].ethAddress;
+	if (ethAddress) {
+		delete ethAddressToTelegramUser[ethAddress];
+		console.log('Removed linkage of telegram id ' + id + ' with eth address ' + ethAddress);
+	}
 	delete activeTelegramUsers[id];
+	console.log('Telegram user id ' + id + ' has disconnected')
 	return ctx.reply('You are now unsubscribed from all contract events');
+});
+
+bot.on('message', ctx => {
+	let id = ctx.chat.id;
+	if (!activeTelegramUsers[id]) {
+		ctx.reply('Ups, I don\'t think I know you yet, please run the /start command first');
+		return;
+	}
+	let text = ctx.message.text;
+	console.log('Received telegram message from ' + id + ': ' + text);
+	if (!(text.startsWith('my-address') && text.split(' ').length > 1)) {
+		ctx.reply('Hey, nice of you to talk to me. That\'s not something I know how to respond to though, sorry');
+	}
+	let ethAddress = text.split(' ')[1];
+	if (!isValidAddress(ethAddress)) {
+		ctx.reply('Sorry, that is an invalid public address');
+		return;
+	}
+	activeTelegramUsers[id].ethAddress = ethAddress;
+	ethAddressToTelegramUser[ethAddress] = id;
+	console.log('Stored linkage of telegram id ' + id + ' with eth address ' + ethAddress);
 });
 
 bot.launch();
