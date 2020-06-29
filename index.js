@@ -187,6 +187,10 @@ const fetchTokenInfo = (tokenAddr, done) => {
 	});
 };
 
+const formatToken = obj => {
+	return '`[' + obj.symbol + '] ' + obj.name + '`';
+};
+
 const tokenInfos = {};
 
 const buildMessage = (eventName, values, toAll, callback) => {
@@ -195,7 +199,7 @@ const buildMessage = (eventName, values, toAll, callback) => {
 	switch(eventName) {
 		case 'Fin4TokenCreated':
 			let descriptionParts = values.description.split('||');
-			message = 'New token created:\n`[' + values.symbol + '] ' + values.name + '`';
+			message = 'New token created:\n' + formatToken(values);
 			if (descriptionParts.length > 1 && descriptionParts[0]) {
 				message += '\n' + descriptionParts[0];
 			}
@@ -206,11 +210,11 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			let text = () => {
 				let tokenInfo = tokenInfos[values.tokenAddr];
 				if (eventName === 'ClaimApproved') {
-					return 'Your claim of ' + values.mintedQuantity + ' on token `[' + tokenInfo.symbol + '] ' + tokenInfo.name
-						+ '` was successful, your new balance on this token is ' + values.newBalance;
+					return 'Your claim of ' + values.mintedQuantity + ' on token ' + formatToken(tokenInfo)
+						+ ' was successful, your new balance on this token is ' + values.newBalance;
 				}
 				if (eventName === 'ClaimRejected') {
-					return 'Your claim  on token `[' + tokenInfo.symbol + '] ' + tokenInfo.name + '`' + ' got rejected';
+					return 'Your claim  on token ' + formatToken(tokenInfo) + ' got rejected';
 				}
 			};
 			fetchTokenInfo(values.tokenAddr, () => {
