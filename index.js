@@ -5,6 +5,8 @@ const { ethers } = require('ethers');
 const port = 5000;
 const config = require('./config.json');
 const Telegraf = require('telegraf')
+const extra = require('telegraf/extra');
+const markup = extra.markdown();
 
 // ------------------------ CONTRACT EVENT SUBSCRIPTIONS ------------------------
 
@@ -176,7 +178,8 @@ bot.command('start', ctx => {
 		ethAddress: null
 	};
 	console.log('Telegram user ' + id + ' has connected');
-	return ctx.reply('Welcome to the FIN4Notifications bot! From now on you will receive notifications when a new token is created. If you also want notifications concerning your account (claim approval etc.), please share your public Ethereum address in the format "my-address 0x...". Note that you thereby allow a link to be made between your Telegram identity and your Ethereum address. That info lives only in the database of the notification server, but servers can be hacked.');
+	ctx.reply('Welcome to the *FIN4Notifications bot*! From now on you will receive notifications when a new token is created. If you also want notifications concerning your account (claim approval etc.), please share your public Ethereum address in the format ```\nmy-address 0x...\n```Note that you thereby allow a link to be made between your Telegram Id and your Ethereum address. That info lives only in the database of the notification server, but servers can be hacked.', markup);
+	ctx.reply('For transparency, this is the info I am seeing from you:```\n' + JSON.stringify(ctx.chat) + '```\nI stored only the Id from it', markup);
 });
 
 // enable this command via the BotFather on
@@ -193,7 +196,7 @@ bot.command('stop', ctx => {
 	}
 	delete activeTelegramUsers[id];
 	console.log('Telegram user id ' + id + ' has disconnected')
-	return ctx.reply('You are now unsubscribed from all contract events');
+	ctx.reply('You are now unsubscribed from all contract events');
 });
 
 bot.on('message', ctx => {
@@ -214,6 +217,7 @@ bot.on('message', ctx => {
 	}
 	activeTelegramUsers[id].ethAddress = ethAddress;
 	ethAddressToTelegramUser[ethAddress] = id;
+	ctx.reply('Great, I stored the linkage between your telegram id ' + id + ' and your Ethereum public address ' + ethAddress + ' and will make sure to forward you contract events that are meant for this address');
 	console.log('Stored linkage of telegram id ' + id + ' with eth address ' + ethAddress);
 });
 
