@@ -173,6 +173,20 @@ const sendToUser = (ethAddress, eventName, values) => {
 	}
 };
 
+const fetchTokenInfo = (tokenAddr, done) => {
+	if (tokenInfos[tokenAddr]) {
+		done();
+		return;
+	}
+	contracts.Fin4TokenManagement.getTokenInfo(tokenAddr).then(({ 1: name, 2: symbol }) => {
+		tokenInfos[tokenAddr] = {
+			name: name,
+			symbol: symbol
+		};
+		done();
+	});
+};
+
 const tokenInfos = {};
 
 const buildMessage = (eventName, values, toAll, callback) => {
@@ -199,15 +213,7 @@ const buildMessage = (eventName, values, toAll, callback) => {
 					return 'Your claim  on token `[' + tokenInfo.symbol + '] ' + tokenInfo.name + '`' + ' got rejected';
 				}
 			};
-			if (tokenInfos[values.tokenAddr]) {
-				callback(text());
-				break;
-			} 
-			contracts.Fin4TokenManagement.getTokenInfo(values.tokenAddr).then(({ 1: name, 2: symbol }) => {
-				tokenInfos[values.tokenAddr] = {
-					name: name,
-					symbol: symbol
-				};
+			fetchTokenInfo(values.tokenAddr, () => {
 				callback(text());
 			});
 			break;
