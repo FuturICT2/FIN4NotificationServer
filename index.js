@@ -254,7 +254,7 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			});
 			break;
 		case 'NewMessage':
-			message = '';
+			callback('You received a new message');
 			break;
 	}
 };
