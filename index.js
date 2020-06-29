@@ -179,7 +179,7 @@ const buildMessage = (eventName, values, toAll, callback) => {
 	switch(eventName) {
 		case 'Fin4TokenCreated':
 			let descriptionParts = values.description.split('||');
-			message = 'New token created:\n*[' + values.symbol + '] ' + values.name + '*';
+			message = 'New token created:\n`[' + values.symbol + '] ' + values.name + '`';
 			if (descriptionParts.length > 1 && descriptionParts[0]) {
 				message += '\n' + descriptionParts[0];
 			}
@@ -302,7 +302,7 @@ bot.on('message', ctx => {
 	}
 	activeTelegramUsers[id].ethAddress = ethAddress;
 	ethAddressToTelegramUser[ethAddress] = id;
-	ctx.reply('Great, I stored the linkage between your telegram id ' + id + ' and your Ethereum public address ' + ethAddress + ' and will make sure to forward you contract events that are meant for this address');
+	ctx.reply('Great, I stored the linkage between your telegram id `' + id + '` and your Ethereum public address `' + ethAddress + '` and will make sure to forward you contract events that are meant for this address', markup);
 	console.log('Stored linkage of telegram id ' + id + ' with eth address ' + ethAddress);
 });
 
