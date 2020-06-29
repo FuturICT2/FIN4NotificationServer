@@ -148,6 +148,24 @@ io.on('connection', socket => {
 
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
 
+let activeTelegramUsers = {};
+
+bot.command('start', ctx => {
+	let id = ctx.chat.id;
+	activeTelegramUsers[id] = {
+		ethAddress: null
+	};
+	console.log('Telegram user ' + id + ' has connected');
+	return ctx.reply('Welcome to the FIN4Notifications bot!');
+});
+
+// enable this command via the BotFather on
+bot.command('stop', ctx => {
+	let id = ctx.chat.id;
+	delete activeTelegramUsers[id];
+	return ctx.reply('You are now unsubscribed from all contract events');
+});
+
 bot.launch();
 
 // ------------------------ SERVE HTML ------------------------
