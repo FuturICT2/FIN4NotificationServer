@@ -210,6 +210,7 @@ const verifierInfos = {};
 const buildMessage = (eventName, values, toAll, callback) => {
 	// let intro = 'A message from the ' + values.contractName + ' contract to ' + (toAll ? 'all' : 'you') + ':\n';
 	let message = '';
+	let text;
 	switch(eventName) {
 		case 'Fin4TokenCreated':
 			let descriptionParts = values.description.split('||');
@@ -221,7 +222,7 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			break;
 		case 'ClaimApproved':
 		case 'ClaimRejected':
-			let text = () => {
+			text = () => {
 				let tokenInfo = tokenInfos[values.tokenAddr];
 				if (eventName === 'ClaimApproved') {
 					return 'Your claim of ' + values.mintedQuantity + ' on token ' + formatToken(tokenInfo)
@@ -237,10 +238,10 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			break;
 		case 'VerifierApproved':
 		case 'VerifierRejected':
-			let text = () => {
+			text = () => {
 				let tokenInfo = tokenInfos[values.tokenAddrToReceiveVerifierNotice];
-				let verifierName = verifierInfos[values.verifierTypeAddress];
-				let message = 'The verifier '  + verifierName + ' ' + (eventName === 'VerifierApproved' ? 'approved' : 'rejected')
+				let verifierInfo = verifierInfos[values.verifierTypeAddress];
+				message = 'The verifier `'  + verifierInfo.contractName + '` ' + (eventName === 'VerifierApproved' ? 'approved' : 'rejected')
 					+ ' the provided proof for your claim on token ' + formatToken(tokenInfo);
 				if (values.message) {
 					message += '\nAttached message: _' + values.message + '_';
