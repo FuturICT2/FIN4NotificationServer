@@ -17,11 +17,10 @@ if (config.INFURA_API_KEY) {
 	provider = new ethers.providers.JsonRpcProvider('http://localhost:7545');
 }
 
-let Fin4MainContract = new ethers.Contract(
-	config.FIN4MAIN_ADDRESS, 
-	require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Main.json').abi, 
-	provider
-);
+let contracts = {
+	Fin4MainContract: new ethers.Contract(config.FIN4MAIN_ADDRESS, 
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Main.json').abi, provider)
+};
 
 let contractEvents = {
 	Fin4TokenCreated: {
@@ -81,25 +80,23 @@ let contractEvents = {
 	}
 };
 
-Fin4MainContract.getSatelliteAddresses().then(addresses => {
-	let contracts = {
-		// 2 Fin4TokenManagement
-		Fin4TokenManagement: new ethers.Contract(addresses[2],
-			require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4TokenManagement.json').abi, provider
-		),
-		// 3 Fin4Claiming
-		Fin4Claiming: new ethers.Contract(addresses[3],
-			require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Claiming.json').abi, provider
-		),
-		// 5 Fin4Messaging
-		Fin4Messaging: new ethers.Contract(addresses[5],
-			require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Messaging.json').abi, provider
-		),
-		// 6 Fin4Verifying
-		Fin4Verifying: new ethers.Contract(addresses[6],
-			require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Verifying.json').abi, provider
-		)
-	};
+contracts.Fin4MainContract.getSatelliteAddresses().then(addresses => {
+	// 2 Fin4TokenManagement
+	contracts.Fin4TokenManagement = new ethers.Contract(addresses[2],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4TokenManagement.json').abi, provider
+	);
+	// 3 Fin4Claiming
+	contracts.Fin4Claiming = new ethers.Contract(addresses[3],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Claiming.json').abi, provider
+	);
+	// 5 Fin4Messaging
+	contracts.Fin4Messaging = new ethers.Contract(addresses[5],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Messaging.json').abi, provider
+	);
+	// 6 Fin4Verifying
+	contracts.Fin4Verifying = new ethers.Contract(addresses[6],
+		require(config.CONTRACTS_BUILD_DIRECTORY + '/Fin4Verifying.json').abi, provider
+	);	
 
 	Object.keys(contractEvents).map(eventName => {
 		let contractName = contractEvents[eventName].contractName;
