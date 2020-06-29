@@ -240,8 +240,12 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			let text = () => {
 				let tokenInfo = tokenInfos[values.tokenAddrToReceiveVerifierNotice];
 				let verifierName = verifierInfos[values.verifierTypeAddress];
-				return 'The verifier '  + verifierName + ' ' + (eventName === 'VerifierApproved' ? 'approved' : 'rejected')
+				let message = 'The verifier '  + verifierName + ' ' + (eventName === 'VerifierApproved' ? 'approved' : 'rejected')
 					+ ' the provided proof for your claim on token ' + formatToken(tokenInfo);
+				if (values.message) {
+					message += '\nAttached message: _' + values.message + '_';
+				}
+				return message;
 			};
 			fetchTokenInfo(values.tokenAddrToReceiveVerifierNotice, () => {
 				fetchVerifierInfo(values.verifierTypeAddress, () => {
