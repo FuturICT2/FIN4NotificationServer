@@ -4,6 +4,7 @@ const io = require('socket.io')(http);
 const { ethers } = require('ethers');
 const port = 5000;
 const config = require('./config.json');
+const Telegraf = require('telegraf')
 
 // ------------------------ CONTRACT EVENT SUBSCRIPTIONS ------------------------
 
@@ -142,6 +143,12 @@ io.on('connection', socket => {
 		console.log('Total registered: ' + Object.keys(ethAddressToSocketId).length);
 	});
 });
+
+// ------------------------ TELEGRAM BOT ------------------------
+
+const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
+
+bot.launch();
 
 // ------------------------ SERVE HTML ------------------------
 

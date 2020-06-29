@@ -9,6 +9,7 @@ The file `config.json` at root level must be added and filled.
 {
     "INFURA_API_KEY": "",
     "CONTRACTS_BUILD_DIRECTORY": "",
-    "FIN4MAIN_ADDRESS": ""
+    "FIN4MAIN_ADDRESS": "",
+    "TELEGRAM_BOT_TOKEN": ""
 }
 ```
