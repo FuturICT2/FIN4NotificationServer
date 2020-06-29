@@ -63,9 +63,9 @@ Fin4MainContract.getSatelliteAddresses().then(addresses => {
 			let values = extractValues(contractName, args);
 			console.log('Received ' + eventName + ' Event from ' + contractName + ' contract', values);
 			if (audience === 'all') {
-				io.emit(eventName, values);
+				sendToAll(eventName, values);
 			} else {
-				emitOnSocket(values[audience], eventName, values)
+				sendToUser(values[audience], eventName, values)
 			}
 		});
 	});
@@ -106,6 +106,14 @@ const isValidAddress = addr => {
 		ethers.utils.getAddress(addr);
 	} catch (e) { return false; }
 	return true;
+};
+
+const sendToAll = (eventName, values) => {
+	io.emit(eventName, values);
+};
+
+const sendToUser = (ethAddress, eventName, values) => {
+	emitOnSocket(ethAddress, eventName, values);
 };
 
 // ------------------------ SOCKET ------------------------
