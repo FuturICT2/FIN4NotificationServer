@@ -157,7 +157,9 @@ const isValidAddress = addr => {
 const sendToAll = (eventName, values) => {
 	io.emit(eventName, values);
 	if (contractEvents[eventName].sendAsMessage) {
-		Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, buildMessage(eventName, values, true), markup));
+		buildMessage(eventName, values, true, message => {
+			Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
+		});
 	}
 };
 
@@ -165,11 +167,13 @@ const sendToUser = (ethAddress, eventName, values) => {
 	emitOnSocket(ethAddress, eventName, values);
 	let telegramUser = ethAddressToTelegramUser[ethAddress];
 	if (telegramUser && contractEvents[eventName].sendAsMessage) {
-		bot.telegram.sendMessage(telegramUser, buildMessage(eventName, values, false), markup);
+		buildMessage(eventName, values, false, message => {
+			bot.telegram.sendMessage(telegramUser, message, markup);
+		});
 	}
 };
 
-const buildMessage = (eventName, values, toAll) => {
+const buildMessage = (eventName, values, toAll, callback) => {
 	// let intro = 'A message from the ' + values.contractName + ' contract to ' + (toAll ? 'all' : 'you') + ':\n';
 	let message = '';
 	switch(eventName) {
@@ -179,6 +183,7 @@ const buildMessage = (eventName, values, toAll) => {
 			if (descriptionParts.length > 1 && descriptionParts[0]) {
 				message += '\n' + descriptionParts[0];
 			}
+			callback(message);
 			break;
 		case 'ClaimApproved':
 			message = '';
@@ -196,7 +201,6 @@ const buildMessage = (eventName, values, toAll) => {
 			message = '';
 			break;
 	}
-	return message;
 };
 
 // ------------------------ SOCKET ------------------------
