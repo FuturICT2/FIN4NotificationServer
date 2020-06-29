@@ -173,6 +173,8 @@ const sendToUser = (ethAddress, eventName, values) => {
 	}
 };
 
+const tokenInfos = {};
+
 const buildMessage = (eventName, values, toAll, callback) => {
 	// let intro = 'A message from the ' + values.contractName + ' contract to ' + (toAll ? 'all' : 'you') + ':\n';
 	let message = '';
@@ -186,16 +188,34 @@ const buildMessage = (eventName, values, toAll, callback) => {
 			callback(message);
 			break;
 		case 'ClaimApproved':
-			message = '';
-			break;
 		case 'ClaimRejected':
-			message = '';
+			let text = () => {
+				let tokenInfo = tokenInfos[values.tokenAddr];
+				if (eventName === 'ClaimApproved') {
+					return 'Your claim of ' + values.mintedQuantity + ' on token `[' + tokenInfo.symbol + '] ' + tokenInfo.name
+						+ '` was successful, your new balance on this token is ' + values.newBalance;
+				}
+				if (eventName === 'ClaimRejected') {
+					return 'Your claim  on token `[' + tokenInfo.symbol + '] ' + tokenInfo.name + '`' + ' got rejected';
+				}
+			};
+			if (tokenInfos[values.tokenAddr]) {
+				callback(text());
+				break;
+			} 
+			contracts.Fin4TokenManagement.getTokenInfo(values.tokenAddr).then(({ 1: name, 2: symbol }) => {
+				tokenInfos[values.tokenAddr] = {
+					name: name,
+					symbol: symbol
+				};
+				callback(text());
+			});
 			break;
 		case 'VerifierApproved':
-			message = '';
+			callback('Verifier approved');
 			break;
 		case 'VerifierRejected':
-			message = '';
+			callback('Verifier rejected');
 			break;
 		case 'NewMessage':
 			message = '';
