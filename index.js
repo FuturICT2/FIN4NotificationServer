@@ -174,7 +174,11 @@ const buildMessage = (eventName, values, toAll) => {
 	let message = '';
 	switch(eventName) {
 		case 'Fin4TokenCreated':
-			message = '';
+			let descriptionParts = values.description.split('||');
+			message = 'New token created:\n*[' + values.symbol + '] ' + values.name + '*';
+			if (descriptionParts.length > 1 && descriptionParts[0]) {
+				message += '\n' + descriptionParts[0];
+			}
 			break;
 		case 'ClaimApproved':
 			message = '';
