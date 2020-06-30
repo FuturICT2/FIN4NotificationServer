@@ -295,6 +295,10 @@ io.on('connection', socket => {
 		console.log('message: ' + msg);
 	});
 
+	socket.on('email-signup', msg => {
+		emailSignup(msg);
+	});
+
 	socket.on('disconnect', () => {
 		console.log('UNREGISTERED ethAddress: ' + socketIdToEthAddress[socket.id], ' socketId: ', socket.id);
 		delete ethAddressToSocketId[socketIdToEthAddress[socket.id]];
@@ -364,6 +368,12 @@ bot.on('message', ctx => {
 });
 
 bot.launch();
+
+// ------------------------ EMAIL ------------------------
+
+const emailSignup = msg => {
+	console.log(msg);
+};
 
 // ------------------------ SERVE HTML ------------------------
 

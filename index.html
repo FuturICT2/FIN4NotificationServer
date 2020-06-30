@@ -36,12 +36,15 @@
     <script>
         $(() => {
             let socket = io();
-            socket.emit('email-signup', 'email, ethAddress');
             socket.on('NewMessage', msg => {
                 console.log(msg);
             });
             $('#submitBtn').click(() => {
-                socket.emit('message', 'test123');
+                let obj = {
+                  email: $('#email').val(),
+                  ethAddress: $('#ethAddress').val()
+                };
+                socket.emit('email-signup', obj);
             });
         });
       </script>
