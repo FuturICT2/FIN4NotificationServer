@@ -2,6 +2,13 @@
 <html>
 	<head>
 		<title>FIN4Xplorer Notification Server</title>
+		<style>
+			html * {
+				font-family: arial;
+			}
+		</style>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	</head>
 	<body>
 		<table>
@@ -24,15 +31,14 @@
 				</tr>
 				<tr>
 					<td colspan="2">
+						<br>
 						<input id="submitBtn" type="submit" value="Submit">
 					</td>
 				</tr>
 			</tbody>
 		</table>
-		<br>
+		<br><br>
 		You can also use our <a href="https://t.me/FIN4Notifications_bot">Telegram bot</a> to subscribe to events.
-		<script src="/socket.io/socket.io.js"></script>
-		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 		<script>
 			let params = new window.URLSearchParams(window.location.search);
 			if (params.get('email')) {
@@ -51,6 +57,7 @@
 					ethAddress: $('#ethAddress').val()
 				};
 				socket.emit('email-signup', obj);
+				console.log('Sent email-signup to server', obj);
 			});
 		</script>
 	</body>
