@@ -34,18 +34,16 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 		<script>
-			$(() => {
-				let socket = io();
-				socket.on('NewMessage', msg => {
-					console.log(msg);
-				});
-				$('#submitBtn').click(() => {
-					let obj = {
-						email: $('#email').val(),
-						ethAddress: $('#ethAddress').val()
-					};
-					socket.emit('email-signup', obj);
-				});
+			let socket = io();
+			socket.on('NewMessage', msg => {
+				console.log(msg);
+			});
+			$('#submitBtn').click(() => {
+				let obj = {
+					email: $('#email').val(),
+					ethAddress: $('#ethAddress').val()
+				};
+				socket.emit('email-signup', obj);
 			});
 		</script>
 	</body>
