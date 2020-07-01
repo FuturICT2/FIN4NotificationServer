@@ -166,6 +166,7 @@ const sendToAll = (eventName, values) => {
 	if (contractEvents[eventName].sendAsMessage) {
 		buildMessage(eventName, values, true, message => {
 			Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
+			// TODO email
 		});
 	}
 };
@@ -176,6 +177,7 @@ const sendToUser = (ethAddress, eventName, values) => {
 	if (telegramUser && contractEvents[eventName].sendAsMessage) {
 		buildMessage(eventName, values, false, message => {
 			bot.telegram.sendMessage(telegramUser, message, markup);
+			// TODO email
 		});
 	}
 };
@@ -401,8 +403,9 @@ const emailSignup = msg => {
 
 	let newAuthKey = nanoid(10);
 	emailSubscribers[email] = {
-		// TODO add event subscription options
-		authKey: newAuthKey
+		email: email,
+		authKey: newAuthKey,
+		events: msg.events
 	};
 	authKeyToEmail[newAuthKey] = email;
 
