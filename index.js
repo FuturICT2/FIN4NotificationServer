@@ -405,8 +405,9 @@ const emailSignup = msg => {
 	};
 	authKeyToEmail[newAuthKey] = email;
 
-	sendEmail(msg.email, 'Subscription confirmed',
+	sendEmail(email, 'Subscription confirmed',
 		'You signed up to receive notifications from the FIN4Xplorer plattform via email.');
+	console.log('Subscribed ' + email + ' to notifications');
 };
 
 const checkEmailAuthkey = authKey => {
