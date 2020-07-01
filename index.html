@@ -124,7 +124,15 @@
 			$('#submitBtn').click(() => {
 				let obj = {
 					email: $('#email').val(),
-					ethAddress: $('#ethAddress').val()
+					ethAddress: $('#ethAddress').val(),
+					events: {
+						Fin4TokenCreated: $('#Fin4TokenCreated').prop('checked'),
+						ClaimApproved: $('#ClaimApproved').prop('checked'),
+						ClaimRejected: $('#ClaimRejected').prop('checked'),
+						VerifierApproved: $('#VerifierApproved').prop('checked'),
+						VerifierRejected: $('#VerifierRejected').prop('checked'),
+						NewMessage: $('#NewMessage').prop('checked')
+					}
 				};
 				socket.emit('email-signup', obj);
 				console.log('Sent email-signup to server', obj);
