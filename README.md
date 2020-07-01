@@ -8,8 +8,13 @@ The file `config.json` at root level must be added and filled.
 ```json
 {
     "INFURA_API_KEY": "",
-    "CONTRACTS_BUILD_DIRECTORY": "",
+    "CONTRACTS_BUILD_DIRECTORY": "../FIN4Xplorer/src/build/contracts",
     "FIN4MAIN_ADDRESS": "",
-    "TELEGRAM_BOT_TOKEN": ""
+    "TELEGRAM_BOT_TOKEN": "",
+    "AWS_SES": {
+        "KEY": "",
+        "SECRET": "",
+        "REGION": "https://email.eu-central-1.amazonaws.com"
+    }
 }
 ```

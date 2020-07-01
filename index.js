@@ -7,6 +7,12 @@ const config = require('./config.json');
 const Telegraf = require('telegraf')
 const extra = require('telegraf/extra');
 const markup = extra.markdown();
+const ses = require('node-ses'); 
+const client = ses.createClient({
+	key: config.AWS_SES.KEY,
+	secret: config.AWS_SES.SECRET,
+	amazon: config.AWS_SES.REGION
+});
 
 // ------------------------ CONTRACT EVENT SUBSCRIPTIONS ------------------------
 
@@ -371,8 +377,40 @@ bot.launch();
 
 // ------------------------ EMAIL ------------------------
 
+let emailSubscribers = {};
+
 const emailSignup = msg => {
-	console.log(msg);
+	if (emailSubscribers[msg.email]) {
+		sendEmail(msg.email, 'Already subscribed',
+			'You are already subscribed to receive FIN4Xplorer notifications. If you wish to change your'
+			+ ' subscription, please unsubscribe and resubscribe with different options selected.');
+		return;
+	}
+
+	emailSubscribers[msg.email] = {
+		Fin4TokenCreated: true
+	};
+
+	sendEmail(msg.email, 'Subscription confirmed',
+		'You signed up to receive notifications from the FIN4Xplorer plattform via email.');
+};
+
+const sendEmail = (to, subject, message) => {
+	let unsubscribeFooter = 'You can unsubscribe using <a href="#">this link</a>.';
+	client.sendEmail({
+		to: to,
+		from: 'finfour@gmx.net',
+		cc: '',
+		bcc: '',
+		subject: '[FIN4Xplorer Notification] ' + subject,
+		message: message + '<br><br>' + unsubscribeFooter,
+		altText: 'plain text'
+	}, (err, data, res) => {
+		if (err) {
+			console.log('Error sending email', err);
+		}
+		// console.log('Email sent', data);
+	 });
 };
 
 // ------------------------ SERVE HTML ------------------------
