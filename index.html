@@ -105,7 +105,9 @@
 				</tr>
 			</tbody>
 		</table>
-		<br><br>
+		<br>
+		<div id="info"></div>
+		<br><br><br>
 		You can also use our <a href="https://t.me/FIN4Notifications_bot">Telegram bot</a> to subscribe to events.
 		<script>
 			let params = new window.URLSearchParams(window.location.search);
@@ -116,8 +118,8 @@
 				$('#ethAddress').val(params.get('ethAddress'));
 			}
 			let socket = io();
-			socket.on('NewMessage', msg => {
-				console.log(msg);
+			socket.on('email-signup-result', msg => {
+				$('#info').html(msg);
 			});
 			$('#submitBtn').click(() => {
 				let obj = {

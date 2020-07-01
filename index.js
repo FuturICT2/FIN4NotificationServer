@@ -303,7 +303,7 @@ io.on('connection', socket => {
 	});
 
 	socket.on('email-signup', msg => {
-		emailSignup(msg);
+		socket.emit('email-signup-result', emailSignup(msg));
 	});
 
 	socket.on('check-email-auth-key', authKey => {
@@ -392,10 +392,11 @@ let authKeyToEmail = {};
 const emailSignup = msg => {
 	let email = msg.email;
 	if (emailSubscribers[email]) {
-		sendEmail(email, 'Already subscribed',
-			'You are already subscribed to receive FIN4Xplorer notifications. If you wish to change your'
-			+ ' subscription, please unsubscribe and resubscribe with different options selected.');
-		return;
+		let message = 'You are already subscribed with that email address. If you wish to change your'
+		+ ' subscription, please un- and resubscribe.';
+		sendEmail(email, 'Already subscribed', message);
+		console.log(email + ' is already subscribed');
+		return message + ' An email with the link to unsubscribe has been sent to you.';
 	}
 
 	let newAuthKey = nanoid(10);
@@ -405,9 +406,10 @@ const emailSignup = msg => {
 	};
 	authKeyToEmail[newAuthKey] = email;
 
-	sendEmail(email, 'Subscription confirmed',
-		'You signed up to receive notifications from the FIN4Xplorer plattform via email.');
+	let message = 'You signed up to receive notifications from the FIN4Xplorer plattform via email.';
+	sendEmail(email, 'Subscription confirmed', message);
 	console.log('Subscribed ' + email + ' to notifications');
+	return message + ' A confirmation email has been sent to you.';
 };
 
 const checkEmailAuthkey = authKey => {
