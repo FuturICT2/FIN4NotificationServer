@@ -10,15 +10,17 @@
 				border-collapse: collapse;
 			}
 			#eventsTable td, 
-			#eventsTable th 
-			{
+			#eventsTable th {
 				font-size: small;
 				border: 1px solid silver;
 				padding: 7px;
 			}
+			.ethAddressRequired {
+				display: none;
+			}
 		</style>
 		<script src="/socket.io/socket.io.js"></script>
-		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	</head>
 	<body>
 		<h3>Welcome to the FIN4Notifications Server</h3>
@@ -70,7 +72,7 @@
 									<td>
 										<center><b>general</b></center>
 									</td>
-									<td>
+									<td class='ethAddressRequired'>
 										<center><b>account-specific</b></center>
 									</td>
 								</tr>
@@ -79,7 +81,7 @@
 										<input type="checkbox" id="Fin4TokenCreated" checked="true">
 										New token created
 									</td>
-									<td>
+									<td class='ethAddressRequired'>
 										<input type="checkbox" id="ClaimApproved" checked="true">
 										Claim approved<br>
 										<input type="checkbox" id="ClaimRejected" checked="true">
@@ -117,6 +119,16 @@
 			if (params.get('ethAddress')) {
 				$('#ethAddress').val(params.get('ethAddress'));
 			}
+			if ($('#ethAddress').val()) {
+				$('.ethAddressRequired').show();
+			}
+			$('#ethAddress').on('input', e => {
+				if($('#ethAddress').val()) {
+					$('.ethAddressRequired').fadeIn('slow');
+				} else {
+					$('.ethAddressRequired').fadeOut('slow');
+				}
+			});
 			let socket = io();
 			socket.on('email-signup-result', msg => {
 				$('#info').html(msg);
