@@ -11,6 +11,25 @@
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 	</head>
 	<body>
+		<h3>Welcome to the FIN4Notifications Server</h3>
+		<div>
+			Here you can subscribe by email to smart contract events emitted from the FIN4Xplorer application.<br>
+			If share only your email address, you can subscribe to events addressed to anyone. If you furthermore<br>
+			supply your Ethereum public address, you can subscribe to events specificially for your account.<br><br>
+			<small><i>
+				Note that one cornerstone of the web3 in general and one of our basic design principals is, that users<br>
+				of FIN4Xplorer don't have to expose anything from themselves other then their public address. Any link<br>
+				to your idendity beyond that, has to happen voluntarily and after explicit consent. When you supply your<br>
+				email address <b>and</b> your Ethereum public address here, you are trading the convenience of receiving<br>
+				notifications while not being on the site, with establishing a link between your blockchain idendity and<br>
+				your email address. Of course, that info lives only on our server, you can unsubscribe at any time and<br>
+				we are on the Rinkeby testnet for now. But servers can be hacked and log files stick around. You are<br>
+				most welcome to use this service (that's why we built it), we just want to make sure you understand the<br>
+				implications of doing so.
+			</i></small>
+		</div>
+		
+		<br><br>
 		<table>
 			<tbody>
 				<tr>
@@ -18,15 +37,15 @@
 						Your email address:
 					</td>
 					<td>
-						<input type="text" id="email">
+						<input type="text" id="email" size="60">
 					</td>
 				</tr>
 				<tr>
 					<td>
-						Your Ethereum public address:
+						Your Ethereum public address <small>(optional)</small>:
 					</td>
 					<td>
-						<input type="text" id="ethAddress">
+						<input type="text" id="ethAddress" size="60">
 					</td>
 				</tr>
 				<tr>
