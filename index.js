@@ -7,6 +7,7 @@ const config = require('./config.json');
 const Telegraf = require('telegraf')
 const extra = require('telegraf/extra');
 const markup = extra.markdown();
+const { nanoid } = require('nanoid');
 const ses = require('node-ses'); 
 const client = ses.createClient({
 	key: config.AWS_SES.KEY,
@@ -305,6 +306,10 @@ io.on('connection', socket => {
 		emailSignup(msg);
 	});
 
+	socket.on('check-email-auth-key', authKey => {
+		socket.emit('check-email-auth-key-result', checkEmailAuthkey(authKey));
+	});
+
 	socket.on('disconnect', () => {
 		console.log('UNREGISTERED ethAddress: ' + socketIdToEthAddress[socket.id], ' socketId: ', socket.id);
 		delete ethAddressToSocketId[socketIdToEthAddress[socket.id]];
@@ -378,25 +383,42 @@ bot.launch();
 // ------------------------ EMAIL ------------------------
 
 let emailSubscribers = {};
+let authKeyToEmail = {};
 
 const emailSignup = msg => {
-	if (emailSubscribers[msg.email]) {
-		sendEmail(msg.email, 'Already subscribed',
+	let email = msg.email;
+	if (emailSubscribers[email]) {
+		sendEmail(email, 'Already subscribed',
 			'You are already subscribed to receive FIN4Xplorer notifications. If you wish to change your'
 			+ ' subscription, please unsubscribe and resubscribe with different options selected.');
 		return;
 	}
 
-	emailSubscribers[msg.email] = {
-		Fin4TokenCreated: true
+	let newAuthKey = nanoid(10);
+	emailSubscribers[email] = {
+		// TODO add event subscription options
+		authKey: newAuthKey
 	};
+	authKeyToEmail[newAuthKey] = email;
 
 	sendEmail(msg.email, 'Subscription confirmed',
 		'You signed up to receive notifications from the FIN4Xplorer plattform via email.');
 };
 
+const checkEmailAuthkey = authKey => {
+	let email = authKeyToEmail[authKey];
+	if (email) { // also check if emailSubscribers[email]? It would have to be true too though, or not in particular cases?
+		return {
+			authKey: authKey,
+			email: email
+		}
+	}
+	return null;
+};
+
 const sendEmail = (to, subject, message) => {
-	let unsubscribeFooter = 'You can unsubscribe using <a href="#">this link</a>.';
+	let unsubscribeFooter = 'You can unsubscribe using <a href="' + config.THIS_URL
+		+ '/unsubscribe/?authKey=' + emailSubscribers[to].authKey + '">this link</a>.';
 	client.sendEmail({
 		to: to,
 		from: 'finfour@gmx.net',

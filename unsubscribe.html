@@ -19,10 +19,23 @@
 			let socket = io();
 			let params = new window.URLSearchParams(window.location.search);
 			if (params.get('authKey')) {
-				// TODO
+				socket.emit('check-email-auth-key', params.get('authKey'));
 			} else {
 				$('#info').html('No authentication key provided in the URL');
 			}
+			let user = {
+				validAuthKey: null,
+				email: null
+			};
+			socket.on('check-email-auth-key-result', _user => {
+				if (_user) {
+					$('#info').html('Press "Unsubscribe" to remove <i>' + _user.email + '</i> from the notification server');
+					user.validAuthKey = _user.authKey;
+					user.email = _user.email;
+				} else {
+					$('#info').html('No email found linked to the provided authentication key');
+				}
+			});
 		</script>
 	</body>
 </html>

@@ -15,6 +15,7 @@ The file `config.json` at root level must be added and filled.
         "KEY": "",
         "SECRET": "",
         "REGION": "https://email.eu-central-1.amazonaws.com"
-    }
+    },
+    "THIS_URL": "https://notifications.finfour.net"
 }
 ```
