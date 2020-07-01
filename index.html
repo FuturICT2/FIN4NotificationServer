@@ -6,6 +6,16 @@
 			html * {
 				font-family: arial;
 			}
+			#eventsTable {
+				border-collapse: collapse;
+			}
+			#eventsTable td, 
+			#eventsTable th 
+			{
+				font-size: small;
+				border: 1px solid silver;
+				padding: 7px;
+			}
 		</style>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -48,6 +58,45 @@
 						<input type="text" id="ethAddress" size="60">
 					</td>
 				</tr>
+				<tr>
+					<td>
+						Contract events to subscribe to:
+					</td>
+					<td>
+						<br>
+						<table id='eventsTable'>
+							<tbody>
+								<tr>
+									<td>
+										<center><b>general</b></center>
+									</td>
+									<td>
+										<center><b>account-specific</b></center>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<input type="checkbox" id="Fin4TokenCreated" checked="true">
+										Fin4TokenCreated
+									</td>
+									<td>
+										<input type="checkbox" id="ClaimApproved" checked="true">
+										ClaimApproved<br>
+										<input type="checkbox" id="ClaimRejected" checked="true">
+										ClaimRejected<br>
+										<input type="checkbox" id="VerifierApproved" checked="true">
+										VerifierApproved<br>
+										<input type="checkbox" id="VerifierRejected" checked="true">
+										VerifierRejected<br>
+										<input type="checkbox" id="NewMessage" checked="true">
+										NewMessage<br>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+				<tr>
 				<tr>
 					<td colspan="2">
 						<br>
