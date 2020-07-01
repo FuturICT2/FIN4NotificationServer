@@ -36,6 +36,17 @@
 					$('#info').html('No email found linked to the provided authentication key');
 				}
 			});
+			$('#unsubscribeBtn').click(() => {
+				if (!user.validAuthKey) {
+					$('#info').html('Can\'t unsubscribe without a valid authentication key');
+					return;
+				}
+				socket.emit('unsubscribe-email', user.validAuthKey);
+				console.log('Unsubscribing email from notifications server', user);
+			});
+			socket.on('unsubscribe-email-result', msg => {
+				$('#info').html(msg);
+			});
 		</script>
 	</body>
 </html>

@@ -310,6 +310,10 @@ io.on('connection', socket => {
 		socket.emit('check-email-auth-key-result', checkEmailAuthkey(authKey));
 	});
 
+	socket.on('unsubscribe-email', authKey => {
+		socket.emit('unsubscribe-email-result', unsubscribeEmail(authKey));
+	});
+
 	socket.on('disconnect', () => {
 		console.log('UNREGISTERED ethAddress: ' + socketIdToEthAddress[socket.id], ' socketId: ', socket.id);
 		delete ethAddressToSocketId[socketIdToEthAddress[socket.id]];
@@ -414,6 +418,17 @@ const checkEmailAuthkey = authKey => {
 		}
 	}
 	return null;
+};
+
+const unsubscribeEmail = authKey => {
+	let email = authKeyToEmail[authKey];
+	if (email) {
+		delete authKeyToEmail[authKey];
+		delete emailSubscribers[email];
+		console.log('Unsubscribed ' + email + ' from notifications');
+		return 'Sucessfully unsubscribed <i>' + email + '</i>';
+	}
+	return 'Failed to unsubscribe';
 };
 
 const sendEmail = (to, subject, message) => {
