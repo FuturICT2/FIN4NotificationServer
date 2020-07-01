@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Unsubscribe from FIN4Xplorer Notification Server</title>
+		<style>
+			html * {
+				font-family: arial;
+			}
+		</style>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	</head>
+	<body>
+		<br>
+		<div id='info'>Loading...</div>
+		<br>
+		<input id="unsubscribeBtn" type="submit" value="Unsubscribe">
+		<script>
+			let socket = io();
+			let params = new window.URLSearchParams(window.location.search);
+			if (params.get('authKey')) {
+				// TODO
+			} else {
+				$('#info').html('No authentication key provided in the URL');
+			}
+		</script>
+	</body>
+</html>

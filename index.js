@@ -419,6 +419,10 @@ app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/unsubscribe', (req, res) => {
+	res.sendFile(__dirname + '/unsubscribe.html');
+});
+
 // ------------------------ START SERVER ------------------------
 
 http.listen(port, () => {
