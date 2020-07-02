@@ -32,56 +32,67 @@ let contracts = {
 let contractEvents = {
 	Fin4TokenCreated: {
 		contractName: 'Fin4TokenManagement',
+		title: 'New token created',
 		audience: 'all',
 		sendAsMessage: true
 	},
 	ClaimSubmitted: {
 		contractName: 'Fin4Claiming',
+		title: 'Claim submitted',
 		audience: 'claimer',
 		sendAsMessage: false
 	},
 	ClaimApproved: {
 		contractName: 'Fin4Claiming',
+		title: 'Claim approved',
 		audience: 'claimer',
 		sendAsMessage: true
 	},
 	ClaimRejected: {
 		contractName: 'Fin4Claiming',
+		title: 'Claim rejected',
 		audience: 'claimer',
 		sendAsMessage: true
 	},
 	UpdatedTotalSupply: {
 		contractName: 'Fin4Claiming',
+		title: 'Updated total supply',
 		audience: 'claimer',
 		sendAsMessage: false
 	},
 	VerifierPending: {
 		contractName: 'Fin4Claiming',
+		title: 'Verifier pending',
 		audience: 'claimer',
 		sendAsMessage: false
 	},
 	VerifierApproved: {
 		contractName: 'Fin4Claiming',
+		title: 'Verifier approved',
 		audience: 'claimer',
 		sendAsMessage: true
 	},
 	VerifierRejected: {
 		contractName: 'Fin4Claiming',
+		title: 'Verifier rejected',
 		audience: 'claimer',
 		sendAsMessage: true
 	},
 	NewMessage: {
 		contractName: 'Fin4Messaging',
+		title: 'New message',
 		audience: 'receiver',
 		sendAsMessage: true
 	},
 	MessageMarkedAsRead: {
 		contractName: 'Fin4Messaging',
+		title: 'Message marked as read',
 		audience: 'receiver',
 		sendAsMessage: false
 	},
 	SubmissionAdded: {
 		contractName: 'Fin4Verifying',
+		title: 'Submission added',
 		audience: 'all',
 		sendAsMessage: false
 	}
