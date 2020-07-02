@@ -189,7 +189,7 @@ const sendToAll = (eventName, values) => {
 		return;
 	}
 
-	buildMessage(eventName, values, true, message => {
+	buildMessage(eventName, values, message => {
 		// Telegram
 		Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
 		// Email
@@ -216,7 +216,7 @@ const sendToUser = (ethAddress, eventName, values) => {
 		return;
 	}
 
-	buildMessage(eventName, values, false, message => {
+	buildMessage(eventName, values, message => {
 		// Telegram
 		if (telegramUser) {
 			bot.telegram.sendMessage(telegramUser, message, markup);
@@ -262,7 +262,7 @@ const formatToken = obj => {
 const tokenInfos = {};
 const verifierInfos = {};
 
-const buildMessage = (eventName, values, toAll, callback) => {
+const buildMessage = (eventName, values, callback) => {
 	// let intro = 'A message from the ' + values.contractName + ' contract to ' + (toAll ? 'all' : 'you') + ':\n';
 	let message = '';
 	let text;
