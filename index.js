@@ -632,8 +632,11 @@ const unsubscribeEmail = authKey => {
 	let email = authKeyToEmail[authKey];
 	if (email) {
 		delete authKeyToEmail[authKey];
+		let ethAddress = emailSubscribers[email].ethAddress;
+		if (ethAddress) {
+			delete ethAddressToEmail[ethAddress];
+		}
 		delete emailSubscribers[email];
-		delete ethAddressToEmail[email]; // this shouldn't crash when there is no such key
 		console.log('Unsubscribed ' + email + ' from notifications');
 		return 'Sucessfully unsubscribed <i>' + email + '</i>';
 	}
