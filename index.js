@@ -189,10 +189,11 @@ const sendToAll = (eventName, values) => {
 		return;
 	}
 
-	buildMessage(eventName, values, message => {
-		// Telegram
+	buildTelegramMessage(eventName, values, message => {
 		Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
-		// Email
+	});
+
+	buildEmailMessage(eventName, values, message => {
 		Object.keys(emailSubscribers)
 			.map(email => emailSubscribers[email])
 			.filter(user => user.events[eventName]) // only users who subscribed to this event type
@@ -209,23 +210,20 @@ const sendToUser = (ethAddress, eventName, values) => {
 	}
 
 	let telegramUser = ethAddressToTelegramUser[ethAddress];
+	if (telegramUser) {
+		buildTelegramMessage(eventName, values, message => {
+			bot.telegram.sendMessage(telegramUser, message, markup);
+		});
+	}
+
 	let emailUser = ethAddressToEmail[ethAddress];
 	let sendByEmail = emailUser && emailSubscribers[emailUser].events[eventName];
 
-	if (!telegramUser && !(emailUser && sendByEmail)) {
-		return;
-	}
-
-	buildMessage(eventName, values, message => {
-		// Telegram
-		if (telegramUser) {
-			bot.telegram.sendMessage(telegramUser, message, markup);
-		}
-		// Email
-		if (emailUser && sendByEmail) {
+	if (emailUser && sendByEmail) {
+		buildEmailMessage(eventName, values, message => {
 			sendEmail(emailUser, eventObj.title, message)
-		}
-	});
+		});
+	}
 };
 
 const fetchTokenInfo = (tokenAddr, done) => {
@@ -262,7 +260,17 @@ const formatToken = obj => {
 const tokenInfos = {};
 const verifierInfos = {};
 
-const buildMessage = (eventName, values, callback) => {
+const buildTelegramMessage = (eventName, values, callback) => {
+	let specialChars = {};
+	return buildMessage(eventName, values, callback, specialChars);
+};
+
+const buildEmailMessage = (eventName, values, callback) => {
+	let specialChars = {};
+	return buildMessage(eventName, values, callback, specialChars);
+};
+
+const buildMessage = (eventName, values, callback, specialChars) => {
 	// let intro = 'A message from the ' + values.contractName + ' contract to ' + (toAll ? 'all' : 'you') + ':\n';
 	let message = '';
 	let text;
