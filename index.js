@@ -201,7 +201,7 @@ const sendToUser = (ethAddress, eventName, values) => {
 
 	let telegramUser = ethAddressToTelegramUser[ethAddress];
 	let emailUser = ethAddressToEmail[ethAddress];
-	let sendByEmail = emailSubscribers[email].events[eventName];
+	let sendByEmail = emailUser && emailSubscribers[emailUser].events[eventName];
 
 	if (!telegramUser && !(emailUser && sendByEmail)) {
 		return;
