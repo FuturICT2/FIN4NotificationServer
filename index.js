@@ -418,8 +418,16 @@ bot.command('start', ctx => {
 		}
 	};
 	console.log('Telegram user ' + id + ' has connected');
-	ctx.reply('Welcome to the *FIN4Notifications bot*! From now on you will receive notifications when a new token is created. If you also want notifications concerning your account (claim approval etc.), please share your public Ethereum address in the format ```\nmy-address 0x...\n```Note that you thereby allow a link to be made between your Telegram Id and your Ethereum address. That info lives only in the database of the notification server, but servers can be hacked.', markup);
-	ctx.reply('For transparency, this is the info I am seeing from you:```\n' + JSON.stringify(ctx.chat) + '```\nI stored only the Id from it', markup);
+	ctx.reply('Welcome to the *FIN4Notifications bot*!\n\nFrom now on you will receive notifications about general events, like the creation of a new token. '
+		+ 'If you also want notifications concerning your account (claim approval etc.), you have to share your public Ethereum address in the format '
+		+ '```\nmy-address 0x...\n```Note that you thereby allow a link to be made between your Telegram Id and your Ethereum address. That info lives '
+		+ 'only in the database of the notification server, but servers can be hacked.'
+		+ '\nMore info on what this means on the site to subscribe by email:\n' + config.THIS_URL
+		+ '\n\nUse the /help command to see your subscription status and get more infos.'
+		+ '\nThe /change command describes how to change your subscription.'
+		+ '\nWith /stop you unsubscribe from all subscriptions.'
+		+ '\n\nFor transparency, this is the info I am seeing from you:```\n' + JSON.stringify(ctx.chat)
+		+ '```\nI stored only the `id` from it.', markup);
 });
 
 // enable this command via the BotFather on
@@ -436,7 +444,7 @@ bot.command('stop', ctx => {
 	}
 	delete activeTelegramUsers[id];
 	console.log('Telegram user id ' + id + ' has disconnected')
-	ctx.reply('You are now unsubscribed from all contract events');
+	ctx.reply('You are now unsubscribed from all contract events.');
 });
 
 bot.command('help', ctx => {
@@ -462,15 +470,21 @@ bot.command('help', ctx => {
 			msg += '\n    - _' + contractEvents[eventName].title + '_';
 		});
 
-		msg += '\n\nTo change which contract events you want to be notified about, use the `\\change` command.'
-			+ '\nTo unsubscribe from all contract events, use the `\\stop` command.';
+		msg += '\n\nTo change which contract events you want to be notified about, use the \change command.'
+			+ '\nTo unsubscribe from all contract events, use the \stop command.';
 	} else {
-		msg += '\n- You are not subscribed to any contract events';
+		msg += '\n- You are not subscribed to any contract events'
+			+ '\n\nClick /start to get going.';
 	}
 	ctx.reply(msg, markup);
 });
 
 bot.command('change', ctx => {
+	let id = ctx.chat.id;
+	if (!activeTelegramUsers[id]) {
+		ctx.reply('Ups, I don\'t think I know you yet, please run the /start command first');
+		return;
+	}
 	let msg = 'Alright, let\'s change which contract events you will be notified about.'
 		+ ' Use the /help command to see which ones you are currently subscribed to.'
 		+ '\n\nThese are the available general contract events:';
@@ -485,7 +499,7 @@ bot.command('change', ctx => {
 		index += 1;
 	});
 	msg += '\n\nWrite me `events` followed by the contract events you want to be subscribed to.';
-	msg += ' For instance `events 1,2,3,6` means, that you want to hear about all but the verifier events.'
+	msg += ' For instance:\n`events 1,2,3,6`\nmeans, that you want to hear about all but the verifier events.'
 	msg += '\nNote that I can\'t subscribe you to any account-specific contract events if I don\'t know your Ethereum public address.'
 	ctx.reply(msg, markup);
 });
@@ -493,7 +507,7 @@ bot.command('change', ctx => {
 bot.on('message', ctx => { // link ethAddress
 	let id = ctx.chat.id;
 	if (!activeTelegramUsers[id]) {
-		ctx.reply('Ups, I don\'t think I know you yet, please run the /start command first');
+		ctx.reply('Ups, I don\'t think I know you yet, please run the /start command first.');
 		return;
 	}
 	let text = ctx.message.text;
@@ -501,13 +515,13 @@ bot.on('message', ctx => { // link ethAddress
 
 	let keyword = text.split(' ')[0];
 	if (!(keyword === 'my-address' || keyword === 'events') || text.split(' ').length !== 2) {
-		ctx.reply('Hey, nice of you to talk to me. That\'s not something I know how to respond to though, sorry');
+		ctx.reply('Hey, nice of you to talk to me. That\'s not something I know how to respond to though, sorry.');
 	}
 
 	if (keyword === 'my-address') {
 		let ethAddress = text.split(' ')[1];
 		if (!isValidAddress(ethAddress)) {
-			ctx.reply('Sorry, that is an invalid public address');
+			ctx.reply('Sorry, that is an invalid public address.');
 			return;
 		}
 		activeTelegramUsers[id].ethAddress = ethAddress;
@@ -518,7 +532,7 @@ bot.on('message', ctx => { // link ethAddress
 		activeTelegramUsers[id].events.NewMessage = true;
 		
 		ethAddressToTelegramUser[ethAddress] = id;
-		ctx.reply('Great, I stored the linkage between your telegram id `' + id + '` and your Ethereum public address `' + ethAddress + '` and will make sure to forward you contract events that are meant for this address', markup);
+		ctx.reply('Great, I stored the linkage between your telegram id `' + id + '` and your Ethereum public address `' + ethAddress + '` and will make sure to forward you contract events that are meant for this address.', markup);
 		console.log('Stored linkage of telegram id ' + id + ' with eth address ' + ethAddress);
 	}
 
