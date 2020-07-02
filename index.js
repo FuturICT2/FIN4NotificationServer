@@ -174,24 +174,49 @@ const isValidAddress = addr => {
 
 const sendToAll = (eventName, values) => {
 	io.emit(eventName, values);
+
 	let eventObj = contractEvents[eventName];
 	if (!eventObj.sendAsMessage) {
 		return;
 	}
+
 	buildMessage(eventName, values, true, message => {
+		// Telegram
 		Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
+		// Email
+		Object.keys(emailSubscribers)
+			.map(email => emailSubscribers[email])
+			.filter(user => user.events[eventName]) // only users who subscribed to this event type
+			.map(user => sendEmail(user.email, eventObj.title, message));
 	});
 };
 
 const sendToUser = (ethAddress, eventName, values) => {
 	emitOnSocket(ethAddress, eventName, values);
-	let telegramUser = ethAddressToTelegramUser[ethAddress];
-	if (telegramUser && contractEvents[eventName].sendAsMessage) {
-		buildMessage(eventName, values, false, message => {
-			bot.telegram.sendMessage(telegramUser, message, markup);
-			// TODO email
-		});
+
+	let eventObj = contractEvents[eventName];
+	if (!eventObj.sendAsMessage) {
+		return;
 	}
+
+	let telegramUser = ethAddressToTelegramUser[ethAddress];
+	let emailUser = ethAddressToEmail[ethAddress];
+	let sendByEmail = emailSubscribers[email].events[eventName];
+
+	if (!telegramUser && !(emailUser && sendByEmail)) {
+		return;
+	}
+
+	buildMessage(eventName, values, false, message => {
+		// Telegram
+		if (telegramUser) {
+			bot.telegram.sendMessage(telegramUser, message, markup);
+		}
+		// Email
+		if (emailUser && sendByEmail) {
+			sendEmail(emailUser, eventObj.title, message)
+		}
+	});
 };
 
 const fetchTokenInfo = (tokenAddr, done) => {
