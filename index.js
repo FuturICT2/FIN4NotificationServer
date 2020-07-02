@@ -15,6 +15,14 @@ const client = ses.createClient({
 	amazon: config.AWS_SES.REGION
 });
 
+const serverLaunchTime = Date.now();
+const blockedTimeAfterLaunch = 5; // seconds
+// when subscribing with ethers.js, sometimes contract events from BEFORE subscribing are
+// fired immediately, the initial block-period is to avoid sending out notifications for these
+const inBlockedPhase = () => {
+	return (Date.now() - serverLaunchTime) / 1000 < blockedTimeAfterLaunch;
+};
+
 // ------------------------ CONTRACT EVENT SUBSCRIPTIONS ------------------------
 
 let provider;
@@ -120,11 +128,12 @@ contracts.Fin4MainContract.getSatelliteAddresses().then(addresses => {
 		let contractName = contractEvents[eventName].contractName;
 		let audience = contractEvents[eventName].audience;
 		contracts[contractName].on(eventName, (...args) => {
+			if (inBlockedPhase()) {
+				return;
+			}
+
 			let values = extractValues(contractName, args);
 			console.log('Received ' + eventName + ' Event from ' + contractName + ' contract', values);
-			
-			// TODO add barrier to avoid sending events from before starting this server
-			// a blocked time at the beginning maybe?
 
 			if (audience === 'all') {
 				sendToAll(eventName, values);
