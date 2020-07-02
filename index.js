@@ -439,7 +439,32 @@ bot.command('stop', ctx => {
 	ctx.reply('You are now unsubscribed from all contract events');
 });
 
-bot.on('message', ctx => {
+bot.command('help', ctx => {
+	let id = ctx.chat.id;
+	let telegramUser = activeTelegramUsers[id]; 
+	let msg = '*Hi, this is the status of your subscription*:\n'
+		+ '\n- Your Id: ' + id;
+	if (telegramUser) {
+		msg += '\n- Your subscription is active'
+		let ethAddress = telegramUser.ethAddress;
+		if (ethAddress) {
+			msg += '\n- Your Ethereum public address:\n    `' + ethAddress + '`';
+		} else {
+			msg += '\n- I don\'t know your Ethereum public address';
+		}
+		msg += '\n- You are subscribed to these contract events:';
+		Object.keys(telegramUser.events).filter(eventName => telegramUser.events[eventName]).map(eventName => {
+			msg += '\n    - _' + contractEvents[eventName].title + '_';
+		});
+		msg += '\n\nTo change which contract events you want to be notified about, use the `\\change` command.'
+			+ '\nTo unsubscribe from all contract events, use the `\\stop` command.';
+	} else {
+		msg += '\n- You are not subscribed to any contract events';
+	}
+	ctx.reply(msg, markup);
+});
+
+bot.on('message', ctx => { // link ethAddress
 	let id = ctx.chat.id;
 	if (!activeTelegramUsers[id]) {
 		ctx.reply('Ups, I don\'t think I know you yet, please run the /start command first');
