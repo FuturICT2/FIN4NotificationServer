@@ -15,7 +15,10 @@
 		<div id='info'>Loading...</div>
 		<br>
 		<input id="unsubscribeBtn" type="submit" value="Unsubscribe">
+		<br><br><br>
+		<div id='mainPage'></div>
 		<script>
+			$('#mainPage').html('Go to <a href="' + window.location.origin + '">' + window.location.origin.split('//')[1] + '</a>');
 			let socket = io();
 			let params = new window.URLSearchParams(window.location.search);
 			if (params.get('authKey')) {
