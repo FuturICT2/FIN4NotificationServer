@@ -23,6 +23,23 @@ const inBlockedPhase = () => {
 	return (Date.now() - serverLaunchTime) / 1000 < blockedTimeAfterLaunch;
 };
 
+const specialChars = {
+	telegram: {
+		newLine: '\n',
+		codeStart: '`',
+		codeEnd: '`',
+		italicStart: '_',
+		italicEnd: '_'
+	},
+	email: {
+		newLine: '<br>',
+		codeStart: '<i>',
+		codeEnd: '</i>',
+		italicStart: '<i>',
+		italicEnd: '</i>'
+	}
+};
+
 // ------------------------ CONTRACT EVENT SUBSCRIPTIONS ------------------------
 
 let provider;
@@ -253,33 +270,31 @@ const fetchVerifierInfo = (verifierAddr, done) => {
 	});
 };
 
-const formatToken = obj => {
-	return '`[' + obj.symbol + '] ' + obj.name + '`';
+const formatToken = (obj, chars) => {
+	return chars.codeStart + '[' + obj.symbol + '] ' + obj.name + chars.codeEnd;
 };
 
 const tokenInfos = {};
 const verifierInfos = {};
 
 const buildTelegramMessage = (eventName, values, callback) => {
-	let specialChars = {};
-	return buildMessage(eventName, values, callback, specialChars);
+	return buildMessage(eventName, values, callback, specialChars.telegram);
 };
 
 const buildEmailMessage = (eventName, values, callback) => {
-	let specialChars = {};
-	return buildMessage(eventName, values, callback, specialChars);
+	return buildMessage(eventName, values, callback, specialChars.email);
 };
 
-const buildMessage = (eventName, values, callback, specialChars) => {
+const buildMessage = (eventName, values, callback, chars) => {
 	// let intro = 'A message from the ' + values.contractName + ' contract to ' + (toAll ? 'all' : 'you') + ':\n';
 	let message = '';
 	let text;
 	switch(eventName) {
 		case 'Fin4TokenCreated':
 			let descriptionParts = values.description.split('||');
-			message = 'New token created:\n' + formatToken(values);
+			message = 'New token created:' + chars.newLine + formatToken(values, chars);
 			if (descriptionParts.length > 1 && descriptionParts[0]) {
-				message += '\n' + descriptionParts[0];
+				message += chars.newLine + descriptionParts[0];
 			}
 			callback(message);
 			break;
@@ -288,11 +303,11 @@ const buildMessage = (eventName, values, callback, specialChars) => {
 			text = () => {
 				let tokenInfo = tokenInfos[values.tokenAddr];
 				if (eventName === 'ClaimApproved') {
-					return 'Your claim of `' + values.mintedQuantity + '` on token ' + formatToken(tokenInfo)
-						+ ' was successful, your new balance on this token is `' + values.newBalance + '`';
+					return 'Your claim of ' + chars.codeStart + values.mintedQuantity + chars.codeEnd + ' on token ' + formatToken(tokenInfo, chars)
+						+ ' was successful, your new balance on this token is ' + chars.codeStart + values.newBalance + chars.codeEnd;
 				}
 				if (eventName === 'ClaimRejected') {
-					return 'Your claim  on token ' + formatToken(tokenInfo) + ' got rejected';
+					return 'Your claim  on token ' + formatToken(tokenInfo, chars) + ' got rejected';
 				}
 			};
 			fetchTokenInfo(values.tokenAddr, () => {
@@ -304,10 +319,10 @@ const buildMessage = (eventName, values, callback, specialChars) => {
 			text = () => {
 				let tokenInfo = tokenInfos[values.tokenAddrToReceiveVerifierNotice];
 				let verifierInfo = verifierInfos[values.verifierTypeAddress];
-				message = 'The verifier `'  + verifierInfo.contractName + '` ' + (eventName === 'VerifierApproved' ? 'approved' : 'rejected')
-					+ ' the provided proof for your claim on token ' + formatToken(tokenInfo);
+				message = 'The verifier ' + chars.codeStart  + verifierInfo.contractName + chars.codeEnd + (eventName === 'VerifierApproved' ? ' approved' : ' rejected')
+					+ ' the provided proof for your claim on token ' + formatToken(tokenInfo, chars);
 				if (values.message) {
-					message += '\nAttached message: _' + values.message + '_';
+					message += chars.newLine + 'Attached message: ' + chars.italicStart + values.message + chars.italicEnd;
 				}
 				return message;
 			};
