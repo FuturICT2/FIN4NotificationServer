@@ -453,9 +453,15 @@ bot.command('help', ctx => {
 			msg += '\n- I don\'t know your Ethereum public address';
 		}
 		msg += '\n- You are subscribed to these contract events:';
-		Object.keys(telegramUser.events).filter(eventName => telegramUser.events[eventName]).map(eventName => {
+
+		let subscribedEvents = Object.keys(telegramUser.events).filter(eventName => telegramUser.events[eventName]);
+		if (subscribedEvents.length === 0) {
+			msg += ' _none_';
+		}
+		subscribedEvents.map(eventName => {
 			msg += '\n    - _' + contractEvents[eventName].title + '_';
 		});
+
 		msg += '\n\nTo change which contract events you want to be notified about, use the `\\change` command.'
 			+ '\nTo unsubscribe from all contract events, use the `\\stop` command.';
 	} else {
