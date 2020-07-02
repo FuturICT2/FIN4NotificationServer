@@ -369,8 +369,8 @@ io.on('connection', socket => {
 		console.log('Total registered: ' + Object.keys(ethAddressToSocketId).length);
 	});
 
-	socket.on('message', msg => {
-		console.log('message: ' + msg);
+	socket.on('get-fin4-url', () => {
+		socket.emit('get-fin4-url-result', config.FIN4_URL);
 	});
 
 	socket.on('email-signup', msg => {

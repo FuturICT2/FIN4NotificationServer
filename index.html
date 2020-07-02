@@ -23,7 +23,7 @@
 		<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	</head>
 	<body>
-		<h3>Welcome to the FIN4Notifications Server</h3>
+		<h3 id='welcome'>Welcome to the FIN4Notifications Server</h3>
 		<div>
 			Here you can subscribe by email to smart contract events emitted from the FIN4Xplorer application.<br>
 			If share only your email address, you can subscribe to events addressed to anyone. If you furthermore<br>
@@ -133,6 +133,11 @@
 				}
 			});
 			let socket = io();
+			socket.emit('get-fin4-url', null);
+			socket.on('get-fin4-url-result', url => {
+				let link = '<a href="' + url + '">' + url.split('//')[1] + '</a>';
+				$('#welcome').html('Welcome to the FIN4Notifications Server for ' + link);
+			});
 			socket.on('email-signup-result', msg => {
 				display(msg);
 			});
