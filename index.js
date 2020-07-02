@@ -408,6 +408,8 @@ let ethAddressToEmail = {};
 const emailSignup = msg => {
 	let email = msg.email;
 	let ethAddress = msg.ethAddress;
+	let events = msg.events;
+
 	if (emailSubscribers[email]) {
 		let message = 'You are already subscribed with that email address. If you wish to change your'
 		+ ' subscription, please un- and resubscribe.';
@@ -425,18 +427,24 @@ const emailSignup = msg => {
 		email: email,
 		ethAddress: ethAddress,
 		authKey: newAuthKey,
-		events: msg.events
+		events: events
 	};
 	authKeyToEmail[newAuthKey] = email;
 	if (ethAddress) {
 		ethAddressToEmail[ethAddress] = email;
 	}
 
+	let subscribedEvents = Object.keys(events).filter(eventName => events[eventName]);
+	let message = 'You signed up to receive notifications from the FIN4Xplorer plattform via email.'
+		+ '<br>You are subscribed to the these events: <i>';
+	for (let i = 0; i < subscribedEvents.length; i++) {
+		message += contractEvents[subscribedEvents[i]].title + ', ';
+	}
+	message = message.substring(0, message.length - 2) + '</i>.';
 
-	let message = 'You signed up to receive notifications from the FIN4Xplorer plattform via email.';
 	sendEmail(email, 'Subscription confirmed', message);
 	console.log('Subscribed ' + email + ' to notifications');
-	return message + ' A confirmation email has been sent to you.';
+	return message + '<br>A confirmation email has been sent to you.';
 };
 
 const checkEmailAuthkey = authKey => {
