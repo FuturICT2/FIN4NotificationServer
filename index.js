@@ -407,7 +407,15 @@ bot.command('start', ctx => {
 		return;
 	}
 	activeTelegramUsers[id] = {
-		ethAddress: null
+		ethAddress: null,
+		events: {
+			Fin4TokenCreated: true,
+			ClaimApproved: false,
+			ClaimRejected: false,
+			VerifierApproved: false,
+			VerifierRejected: false,
+			NewMessage: false
+		}
 	};
 	console.log('Telegram user ' + id + ' has connected');
 	ctx.reply('Welcome to the *FIN4Notifications bot*! From now on you will receive notifications when a new token is created. If you also want notifications concerning your account (claim approval etc.), please share your public Ethereum address in the format ```\nmy-address 0x...\n```Note that you thereby allow a link to be made between your Telegram Id and your Ethereum address. That info lives only in the database of the notification server, but servers can be hacked.', markup);
@@ -448,6 +456,12 @@ bot.on('message', ctx => {
 		return;
 	}
 	activeTelegramUsers[id].ethAddress = ethAddress;
+	activeTelegramUsers[id].events.ClaimApproved = true;
+	activeTelegramUsers[id].events.ClaimRejected = true;
+	activeTelegramUsers[id].events.VerifierApproved = true;
+	activeTelegramUsers[id].events.VerifierRejected = true;
+	activeTelegramUsers[id].events.NewMessage = true;
+	
 	ethAddressToTelegramUser[ethAddress] = id;
 	ctx.reply('Great, I stored the linkage between your telegram id `' + id + '` and your Ethereum public address `' + ethAddress + '` and will make sure to forward you contract events that are meant for this address', markup);
 	console.log('Stored linkage of telegram id ' + id + ' with eth address ' + ethAddress);
