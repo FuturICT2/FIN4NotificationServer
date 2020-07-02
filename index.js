@@ -492,7 +492,7 @@ const emailSignup = msg => {
 	}
 
 	let subscribedEvents = Object.keys(events).filter(eventName => events[eventName]);
-	let message = 'You signed up to receive notifications from the FIN4Xplorer plattform via email.'
+	let message = 'You signed up to receive notifications from the FIN4Xplorer plattform via ' + email + '.'
 		+ '<br>You are subscribed to the these events: <i>';
 	for (let i = 0; i < subscribedEvents.length; i++) {
 		message += contractEvents[subscribedEvents[i]].title + ', ';
@@ -528,7 +528,7 @@ const unsubscribeEmail = authKey => {
 };
 
 const sendEmail = (to, subject, message) => {
-	let unsubscribeFooter = 'You can unsubscribe using <a href="' + config.THIS_URL
+	let unsubscribeFooter = 'You can unsubscribe from FIN4Xplorer notifications using <a href="' + config.THIS_URL
 		+ '/unsubscribe/?authKey=' + emailSubscribers[to].authKey + '">this link</a>.';
 	client.sendEmail({
 		to: to,
