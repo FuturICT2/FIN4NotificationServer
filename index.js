@@ -400,11 +400,14 @@ bot.launch();
 
 // ------------------------ EMAIL ------------------------
 
+// or do one object instead and search more?
 let emailSubscribers = {};
 let authKeyToEmail = {};
+let ethAddressToEmail = {};
 
 const emailSignup = msg => {
 	let email = msg.email;
+	let ethAddress = msg.ethAddress;
 	if (emailSubscribers[email]) {
 		let message = 'You are already subscribed with that email address. If you wish to change your'
 		+ ' subscription, please un- and resubscribe.';
@@ -413,13 +416,22 @@ const emailSignup = msg => {
 		return message + ' An email with the link to unsubscribe has been sent to you.';
 	}
 
+	if (ethAddress && !isValidAddress(ethAddress)) {
+		return 'Sorry, that is an invalid public address';
+	}
+
 	let newAuthKey = nanoid(10);
 	emailSubscribers[email] = {
 		email: email,
+		ethAddress: ethAddress,
 		authKey: newAuthKey,
 		events: msg.events
 	};
 	authKeyToEmail[newAuthKey] = email;
+	if (ethAddress) {
+		ethAddressToEmail[ethAddress] = email;
+	}
+
 
 	let message = 'You signed up to receive notifications from the FIN4Xplorer plattform via email.';
 	sendEmail(email, 'Subscription confirmed', message);
@@ -443,6 +455,7 @@ const unsubscribeEmail = authKey => {
 	if (email) {
 		delete authKeyToEmail[authKey];
 		delete emailSubscribers[email];
+		delete ethAddressToEmail[email]; // this shouldn't crash when there is no such key
 		console.log('Unsubscribed ' + email + ' from notifications');
 		return 'Sucessfully unsubscribed <i>' + email + '</i>';
 	}
