@@ -470,6 +470,26 @@ bot.command('help', ctx => {
 	ctx.reply(msg, markup);
 });
 
+bot.command('change', ctx => {
+	let msg = 'Alright, let\'s change which contract events you will be notified about.'
+		+ ' Use the /help command to see which ones you are currently subscribed to.'
+		+ '\n\nThese are the available general contract events:';
+	let index = 1;
+	Object.keys(contractEvents).filter(eventName => contractEvents[eventName].sendAsMessage && contractEvents[eventName].audience === 'all').map(eventName => {
+		msg += '\n    *' + index + '*: _' + contractEvents[eventName].title + '_';
+		index += 1;
+	});
+	msg += '\nThese are the available account-specific contract events:';
+	Object.keys(contractEvents).filter(eventName => contractEvents[eventName].sendAsMessage && contractEvents[eventName].audience !== 'all').map(eventName => {
+		msg += '\n    *' + index + '*: _' + contractEvents[eventName].title + '_';
+		index += 1;
+	});
+	msg += '\n\nWrite me `events` followed by the contract events you want to be subscribed to.';
+	msg += ' For instance `events 1,2,3,6` means, that you want to hear about all but the verifier events.'
+	msg += '\nNote that I can\'t subscribe you to any account-specific contract events if I don\'t know your Ethereum public address.'
+	ctx.reply(msg, markup);
+});
+
 bot.on('message', ctx => { // link ethAddress
 	let id = ctx.chat.id;
 	if (!activeTelegramUsers[id]) {
