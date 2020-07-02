@@ -498,24 +498,58 @@ bot.on('message', ctx => { // link ethAddress
 	}
 	let text = ctx.message.text;
 	console.log('Received telegram message from ' + id + ': ' + text);
-	if (!(text.startsWith('my-address') && text.split(' ').length > 1)) {
+
+	let keyword = text.split(' ')[0];
+	if (!(keyword === 'my-address' || keyword === 'events') || text.split(' ').length !== 2) {
 		ctx.reply('Hey, nice of you to talk to me. That\'s not something I know how to respond to though, sorry');
 	}
-	let ethAddress = text.split(' ')[1];
-	if (!isValidAddress(ethAddress)) {
-		ctx.reply('Sorry, that is an invalid public address');
-		return;
+
+	if (keyword === 'my-address') {
+		let ethAddress = text.split(' ')[1];
+		if (!isValidAddress(ethAddress)) {
+			ctx.reply('Sorry, that is an invalid public address');
+			return;
+		}
+		activeTelegramUsers[id].ethAddress = ethAddress;
+		activeTelegramUsers[id].events.ClaimApproved = true;
+		activeTelegramUsers[id].events.ClaimRejected = true;
+		activeTelegramUsers[id].events.VerifierApproved = true;
+		activeTelegramUsers[id].events.VerifierRejected = true;
+		activeTelegramUsers[id].events.NewMessage = true;
+		
+		ethAddressToTelegramUser[ethAddress] = id;
+		ctx.reply('Great, I stored the linkage between your telegram id `' + id + '` and your Ethereum public address `' + ethAddress + '` and will make sure to forward you contract events that are meant for this address', markup);
+		console.log('Stored linkage of telegram id ' + id + ' with eth address ' + ethAddress);
 	}
-	activeTelegramUsers[id].ethAddress = ethAddress;
-	activeTelegramUsers[id].events.ClaimApproved = true;
-	activeTelegramUsers[id].events.ClaimRejected = true;
-	activeTelegramUsers[id].events.VerifierApproved = true;
-	activeTelegramUsers[id].events.VerifierRejected = true;
-	activeTelegramUsers[id].events.NewMessage = true;
-	
-	ethAddressToTelegramUser[ethAddress] = id;
-	ctx.reply('Great, I stored the linkage between your telegram id `' + id + '` and your Ethereum public address `' + ethAddress + '` and will make sure to forward you contract events that are meant for this address', markup);
-	console.log('Stored linkage of telegram id ' + id + ' with eth address ' + ethAddress);
+
+	if (keyword === 'events') {
+		let eventIndicesRaw = text.split(' ')[1].split(',');
+		let allSendableEvents = Object.keys(contractEvents).filter(eventName => contractEvents[eventName].sendAsMessage);
+		let allSendableGeneralEvents = allSendableEvents.filter(eventName => contractEvents[eventName].audience === 'all');
+
+		let eventIndices = [];
+
+		// validate the indices
+		for (let i = 0; i < eventIndicesRaw.length; i++) {
+			let index = Number(eventIndicesRaw[i].trim()) - 1;
+			if (index < 0 || index >= allSendableEvents.length) {
+				ctx.reply('There is an error in your event indices, no change was made. I am expecting numbers ranging from `1` to `' + allSendableEvents.length + '`.', markup);
+				return;
+			}
+			eventIndices.push(index); // no need to check for duplicates, they don't hurt
+		}
+
+		allSendableEvents.map((eventName, idx) => {
+			let verdict = eventIndices.includes(idx);
+			if (!activeTelegramUsers[id].ethAddress && !allSendableGeneralEvents.includes(eventName)) {
+				verdict = false;
+			}
+			activeTelegramUsers[id].events[eventName] = verdict;
+		});
+
+		ctx.reply('That worked, your subscription is changed. Use /help to see your new status.', markup);
+		console.log('Telegram user ' + id + ' changed their subscription');
+	}
 });
 
 bot.launch();
