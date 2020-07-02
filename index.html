@@ -112,6 +112,9 @@
 		<br><br><br>
 		You can also use our <a href="https://t.me/FIN4Notifications_bot">Telegram bot</a> to subscribe to events.
 		<script>
+			const display = msg => {
+				$('#info').html(msg);
+			};
 			let params = new window.URLSearchParams(window.location.search);
 			if (params.get('email')) {
 				$('#email').val(params.get('email'));
@@ -131,23 +134,38 @@
 			});
 			let socket = io();
 			socket.on('email-signup-result', msg => {
-				$('#info').html(msg);
+				display(msg);
 			});
 			$('#submitBtn').click(() => {
-				let obj = {
-					email: $('#email').val(),
-					ethAddress: $('#ethAddress').val(),
-					events: {
-						Fin4TokenCreated: $('#Fin4TokenCreated').prop('checked'),
-						ClaimApproved: $('#ClaimApproved').prop('checked'),
-						ClaimRejected: $('#ClaimRejected').prop('checked'),
-						VerifierApproved: $('#VerifierApproved').prop('checked'),
-						VerifierRejected: $('#VerifierRejected').prop('checked'),
-						NewMessage: $('#NewMessage').prop('checked')
-					}
+				let email = $('#email').val();
+				if (!email) {
+					display('No email provided');
+					return;
+				}
+				let ethAddress = $('#ethAddress').val();
+				let events = {
+					Fin4TokenCreated: $('#Fin4TokenCreated').prop('checked'),
+					ClaimApproved: $('#ClaimApproved').prop('checked'),
+					ClaimRejected: $('#ClaimRejected').prop('checked'),
+					VerifierApproved: $('#VerifierApproved').prop('checked'),
+					VerifierRejected: $('#VerifierRejected').prop('checked'),
+					NewMessage: $('#NewMessage').prop('checked')
 				};
-				socket.emit('email-signup', obj);
-				console.log('Sent email-signup to server', obj);
+
+				let checkedCount = Object.keys(events).filter(eventName => events[eventName]).length;
+				if ((!ethAddress && !events.Fin4TokenCreated) || (ethAddress && checkedCount === 0)) {
+					display('No contract events selected')
+					return;
+				}
+				
+				let msg = {
+					email: email,
+					ethAddress: ethAddress,
+					events: events
+				};
+				display('Submitting...');
+				socket.emit('email-signup', msg);
+				console.log('Sent email-signup to server', msg);
 			});
 		</script>
 	</body>
