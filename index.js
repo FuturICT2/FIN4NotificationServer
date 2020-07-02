@@ -174,12 +174,13 @@ const isValidAddress = addr => {
 
 const sendToAll = (eventName, values) => {
 	io.emit(eventName, values);
-	if (contractEvents[eventName].sendAsMessage) {
-		buildMessage(eventName, values, true, message => {
-			Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
-			// TODO email
-		});
+	let eventObj = contractEvents[eventName];
+	if (!eventObj.sendAsMessage) {
+		return;
 	}
+	buildMessage(eventName, values, true, message => {
+		Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
+	});
 };
 
 const sendToUser = (ethAddress, eventName, values) => {
