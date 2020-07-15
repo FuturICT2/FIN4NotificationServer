@@ -284,7 +284,9 @@ const sendToAll = (eventName, values) => {
 	}
 
 	buildTelegramMessage(eventName, values, message => {
-		Object.keys(activeTelegramUsers).map(telegramUser => bot.telegram.sendMessage(telegramUser, message, markup));
+		Object.keys(activeTelegramUsers)
+			.filter(telegramId => activeTelegramUsers[telegramId].events[eventName])
+			.map(telegramId => bot.telegram.sendMessage(telegramId, message, markup));
 	});
 
 	buildEmailMessage(eventName, values, message => {
@@ -303,10 +305,12 @@ const sendToUser = (ethAddress, eventName, values) => {
 		return;
 	}
 
-	let telegramUser = ethAddressToTelegramUser[ethAddress];
-	if (telegramUser) {
+	let telegramId = ethAddressToTelegramUser[ethAddress];
+	let sendViaTelegram = telegramId && activeTelegramUsers[telegramId].events[eventName];
+
+	if (telegramId && sendViaTelegram) {
 		buildTelegramMessage(eventName, values, message => {
-			bot.telegram.sendMessage(telegramUser, message, markup);
+			bot.telegram.sendMessage(telegramId, message, markup);
 		});
 	}
 
