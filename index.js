@@ -525,7 +525,7 @@ bot.command('help', ctx => {
 	let id = ctx.chat.id;
 	let telegramUser = activeTelegramUsers[id]; 
 	let msg = '*Hi, this is the status of your subscription*:\n'
-		+ '\n- Your Id: ' + id;
+		+ '\n- Your Id: `' + id + '`';
 	if (telegramUser) {
 		msg += '\n- Your subscription is active'
 		let ethAddress = telegramUser.ethAddress;
