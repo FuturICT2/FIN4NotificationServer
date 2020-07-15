@@ -17,7 +17,7 @@ const client = ses.createClient({
 const MongoClient = require('mongodb').MongoClient;
 const dbUrl = 'mongodb://localhost:27017';
 const dbName = 'notification-server';
-const dbClient = new MongoClient(dbUrl);
+const dbClient = new MongoClient(dbUrl, { useUnifiedTopology: true });
 
 dbClient.connect(err => {
 	if (err) {
