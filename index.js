@@ -43,6 +43,16 @@ const storeEmailSubscriberInDb = userObj => {
 	});
 };
 
+const removeEmailSubscriberFromDb = email => {
+	getDbCollection(dbEmailCollectionName, (coll, client) => {
+		coll.deleteOne({ email : email }, (err, result) => {
+			if (err) { console.log("Error:", err); }
+			console.log('Removed email ' + email + ' from DB');
+			client.close();
+		});
+	});
+};
+
 const serverLaunchTime = Date.now();
 const blockedTimeAfterLaunch = 5; // seconds
 // when subscribing with ethers.js, sometimes contract events from BEFORE subscribing are
@@ -666,6 +676,7 @@ const unsubscribeEmail = authKey => {
 			delete ethAddressToEmail[ethAddress];
 		}
 		delete emailSubscribers[email];
+		removeEmailSubscriberFromDb(email);
 		console.log('Unsubscribed ' + email + ' from notifications');
 		return 'Sucessfully unsubscribed <i>' + email + '</i>';
 	}
