@@ -16,18 +16,32 @@ const client = ses.createClient({
 });
 const MongoClient = require('mongodb').MongoClient;
 const dbUrl = 'mongodb://localhost:27017';
-const dbName = 'notification-server';
 const dbClient = new MongoClient(dbUrl, { useUnifiedTopology: true });
+const dbName = 'notification_server';
+const dbEmailCollectionName = 'email_subscribers';
+const dbTelegramCollectionName = 'telegram_subscribers';
 
-dbClient.connect(err => {
-	if (err) {
-		console.log("Error:", err);
-		return;
-	}
-	console.log("Connected successfully to mongodb");
-	const db = dbClient.db(dbName);
-	dbClient.close();
-});
+const getDbCollection = (name, callback) => {
+	dbClient.connect(err => {
+		if (err) {
+			console.log("Error:", err);
+			return;
+		}
+		let db = dbClient.db(dbName);
+		let collection = db.collection(name);
+		callback(collection, dbClient);
+	});
+};
+
+const storeEmailSubscriberInDb = userObj => {
+	getDbCollection(dbEmailCollectionName, (coll, client) => {
+		coll.insertOne(userObj, (err, result) => {
+			if (err) { console.log("Error:", err); }
+			console.log("Stored email subscriber in DB: ", userObj);
+			client.close();
+		});
+	});
+};
 
 const serverLaunchTime = Date.now();
 const blockedTimeAfterLaunch = 5; // seconds
@@ -616,6 +630,8 @@ const emailSignup = msg => {
 	if (ethAddress) {
 		ethAddressToEmail[ethAddress] = email;
 	}
+
+	storeEmailSubscriberInDb(emailSubscribers[email]);
 
 	let subscribedEvents = Object.keys(events).filter(eventName => events[eventName]);
 	let message = 'You signed up to receive notifications from the FIN4Xplorer plattform via ' + email + '.'
