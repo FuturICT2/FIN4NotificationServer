@@ -65,7 +65,7 @@ dbClient.connect(err => {
 const storeEmailSubscriberInDb = userObj => {
 	emailDbCollection.insertOne(userObj, (err, result) => {
 		if (err) { console.log("Error:", err); }
-		console.log("Stored email subscriber in DB: ", userObj);
+		console.log("Stored email subscriber in DB: ", userObj.email);
 	});
 };
 
@@ -79,7 +79,7 @@ const removeEmailSubscriberFromDb = email => {
 const storeTelegramSubscriberInDb = userObj => {
 	telegramDbCollection.insertOne(userObj, (err, result) => {
 		if (err) { console.log("Error:", err); }
-		console.log("Stored telegram subscriber in DB: ", userObj);
+		console.log("Stored telegram subscriber in DB: ", userObj.telegramId);
 	});
 };
 
@@ -236,7 +236,7 @@ contracts.Fin4MainContract.getSatelliteAddresses().then(addresses => {
 			}
 
 			let values = extractValues(contractName, args);
-			console.log('Received ' + eventName + ' Event from ' + contractName + ' contract', values);
+			console.log('Received ' + eventName + ' Event from ' + contractName + ' contract');
 
 			if (audience === 'all') {
 				sendToAll(eventName, values);
