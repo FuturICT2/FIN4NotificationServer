@@ -1,6 +1,6 @@
 const app = require('express')();
 const http = require('http').createServer(app);
-// const io = require('socket.io')(http);
+const io = require('socket.io')(http);
 const { ethers } = require('ethers');
 const port = 5000;
 const config = require('./config.json');
@@ -372,16 +372,9 @@ const getSocket = ethAddr => {
 // active frontends
 let ethAddressToSocketId = {};
 let socketIdToEthAddress = {};
-
+*/
 io.on('connection', socket => {
-	console.log('user connected');
-
-	socket.on('register', ethAddress => {
-		ethAddressToSocketId[ethAddress] = socket.id;
-		socketIdToEthAddress[socket.id] = ethAddress;
-		console.log('REGISTERED ethAddress: ' + ethAddress, ' socketId: ', socket.id);
-		console.log('Total registered: ' + Object.keys(ethAddressToSocketId).length);
-	});
+	console.log('New socket connection');
 
 	socket.on('get-fin4-url', () => {
 		socket.emit('get-fin4-url-result', config.FIN4_URL);
@@ -399,14 +392,20 @@ io.on('connection', socket => {
 		socket.emit('unsubscribe-email-result', unsubscribeEmail(authKey));
 	});
 
+	/*socket.on('register', ethAddress => {
+		ethAddressToSocketId[ethAddress] = socket.id;
+		socketIdToEthAddress[socket.id] = ethAddress;
+		console.log('REGISTERED ethAddress: ' + ethAddress, ' socketId: ', socket.id);
+		console.log('Total registered: ' + Object.keys(ethAddressToSocketId).length);
+	});
 	socket.on('disconnect', () => {
 		console.log('UNREGISTERED ethAddress: ' + socketIdToEthAddress[socket.id], ' socketId: ', socket.id);
 		delete ethAddressToSocketId[socketIdToEthAddress[socket.id]];
 		delete socketIdToEthAddress[socket.id];
 		console.log('Total registered: ' + Object.keys(ethAddressToSocketId).length);
-	});
+	});*/
 });
-*/
+
 // ------------------------ TELEGRAM BOT ------------------------
 
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
