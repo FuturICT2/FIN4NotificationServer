@@ -35,7 +35,12 @@ dbClient.connect(err => {
 	emailDbCollection.find({}).toArray((err, docs) => {
 		if (err) { console.log("Error:", err); }
 		docs.map(userObj => {
-			emailSubscribers[userObj.email] = userObj;
+			let email = userObj.email;
+			emailSubscribers[email] = userObj;
+			authKeyToEmail[userObj.authKey] = email;
+			if (userObj.ethAddress) {
+				ethAddressToEmail[userObj.ethAddress] = email;
+			}
 		});
 		console.log('Loaded ' + docs.length + ' email subscribers from DB');
 	});
@@ -46,7 +51,11 @@ dbClient.connect(err => {
 	telegramDbCollection.find({}).toArray((err, docs) => {
 		if (err) { console.log("Error:", err); }
 		docs.map(userObj => {
-			activeTelegramUsers[userObj.telegramId] = userObj;
+			let telegramId = userObj.telegramId;
+			activeTelegramUsers[telegramId] = userObj;
+			if (userObj.ethAddress) {
+				ethAddressToTelegramUser[userObj.ethAddress] = telegramId;
+			}
 		});
 		console.log('Loaded ' + docs.length + ' telegram subscribers from DB');
 	});
