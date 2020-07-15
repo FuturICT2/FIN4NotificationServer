@@ -18,38 +18,32 @@ const MongoClient = require('mongodb').MongoClient;
 const dbUrl = 'mongodb://localhost:27017';
 const dbClient = new MongoClient(dbUrl, { useUnifiedTopology: true });
 const dbName = 'notification_server';
-const dbEmailCollectionName = 'email_subscribers';
-const dbTelegramCollectionName = 'telegram_subscribers';
+let emailDbCollection;
+let telegramDbCollection;
 
-const getDbCollection = (name, callback) => {
-	dbClient.connect(err => {
-		if (err) {
-			console.log("Error:", err);
-			return;
-		}
-		let db = dbClient.db(dbName);
-		let collection = db.collection(name);
-		callback(collection, dbClient);
-	});
-};
+dbClient.connect(err => {
+	if (err) {
+		console.log("Error connecting to MongoDB:", err);
+		return;
+	}
+	const db = dbClient.db(dbName);
+	emailDbCollection = db.collection('email_subscribers');
+	telegramDbCollection = db.collection('telegram_subscribers');
+	// it's ok to leave the DB connection open: https://stackoverflow.com/a/18651208
+});
+
 
 const storeEmailSubscriberInDb = userObj => {
-	getDbCollection(dbEmailCollectionName, (coll, client) => {
-		coll.insertOne(userObj, (err, result) => {
-			if (err) { console.log("Error:", err); }
-			console.log("Stored email subscriber in DB: ", userObj);
-			client.close();
-		});
+	emailDbCollection.insertOne(userObj, (err, result) => {
+		if (err) { console.log("Error:", err); }
+		console.log("Stored email subscriber in DB: ", userObj);
 	});
 };
 
 const removeEmailSubscriberFromDb = email => {
-	getDbCollection(dbEmailCollectionName, (coll, client) => {
-		coll.deleteOne({ email : email }, (err, result) => {
-			if (err) { console.log("Error:", err); }
-			console.log('Removed email ' + email + ' from DB');
-			client.close();
-		});
+	emailDbCollection.deleteOne({ email : email }, (err, result) => {
+		if (err) { console.log("Error:", err); }
+		console.log('Removed email ' + email + ' from DB');
 	});
 };
 
