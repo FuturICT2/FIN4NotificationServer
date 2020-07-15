@@ -14,6 +14,20 @@ const client = ses.createClient({
 	secret: config.AWS_SES.SECRET,
 	amazon: config.AWS_SES.REGION
 });
+const MongoClient = require('mongodb').MongoClient;
+const dbUrl = 'mongodb://localhost:27017';
+const dbName = 'notification-server';
+const dbClient = new MongoClient(dbUrl);
+
+dbClient.connect(err => {
+	if (err) {
+		console.log("Error:", err);
+		return;
+	}
+	console.log("Connected successfully to mongodb");
+	const db = dbClient.db(dbName);
+	dbClient.close();
+});
 
 const serverLaunchTime = Date.now();
 const blockedTimeAfterLaunch = 5; // seconds
