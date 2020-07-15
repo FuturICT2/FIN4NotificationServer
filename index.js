@@ -70,7 +70,14 @@ const storeTelegramSubscriberInDb = userObj => {
 };
 
 const updateTelegramSubscriberInDb = telegramId => {
-	// TODO
+	telegramDbCollection.updateOne({ telegramId : telegramId },
+		{ $set: {
+			ethAddress: activeTelegramUsers[telegramId].ethAddress,
+			events: activeTelegramUsers[telegramId].events
+		}}, (err, result) => {
+			if (err) { console.log("Error:", err); }
+			console.log('Updated telegram user ' + telegramId + ' in DB');
+	  });
 };
 
 const removeTelegramSubscriberFromDb = telegramId => {
@@ -597,6 +604,8 @@ bot.on('message', ctx => { // link ethAddress
 		activeTelegramUsers[id].events.VerifierApproved = true;
 		activeTelegramUsers[id].events.VerifierRejected = true;
 		activeTelegramUsers[id].events.NewMessage = true;
+
+		updateTelegramSubscriberInDb(id);
 		
 		ethAddressToTelegramUser[ethAddress] = id;
 		ctx.reply('Great, I stored the linkage between your telegram id `' + id + '` and your Ethereum public address `' + ethAddress + '` and will make sure to forward you contract events that are meant for this address.', markup);
@@ -627,6 +636,8 @@ bot.on('message', ctx => { // link ethAddress
 			}
 			activeTelegramUsers[id].events[eventName] = verdict;
 		});
+
+		updateTelegramSubscriberInDb(id);
 
 		ctx.reply('That worked, your subscription is changed. Use /help to see your new status.', markup);
 		console.log('Telegram user ' + id + ' changed their subscription');
