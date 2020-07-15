@@ -27,9 +27,24 @@ dbClient.connect(err => {
 		return;
 	}
 	const db = dbClient.db(dbName);
-	emailDbCollection = db.collection('email_subscribers');
-	telegramDbCollection = db.collection('telegram_subscribers');
 	// it's ok to leave the DB connection open: https://stackoverflow.com/a/18651208
+
+	// EMAIL
+	emailDbCollection = db.collection('email_subscribers');
+	// load existing subscribers
+	emailDbCollection.find({}).toArray((err, docs) => {
+		if (err) { console.log("Error:", err); }
+		docs.map(userObj => {
+			emailSubscribers[userObj.email] = userObj;
+		});
+		console.log('Loaded ' + docs.length + ' email subscribers from DB');
+	});
+
+	// TELEGRAM
+	telegramDbCollection = db.collection('telegram_subscribers');
+	// load existing subscribers
+
+	// TODO
 });
 
 
