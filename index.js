@@ -43,8 +43,13 @@ dbClient.connect(err => {
 	// TELEGRAM
 	telegramDbCollection = db.collection('telegram_subscribers');
 	// load existing subscribers
-
-	// TODO
+	telegramDbCollection.find({}).toArray((err, docs) => {
+		if (err) { console.log("Error:", err); }
+		docs.map(userObj => {
+			activeTelegramUsers[userObj.telegramId] = userObj;
+		});
+		console.log('Loaded ' + docs.length + ' telegram subscribers from DB');
+	});
 });
 
 
