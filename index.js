@@ -62,6 +62,24 @@ const removeEmailSubscriberFromDb = email => {
 	});
 };
 
+const storeTelegramSubscriberInDb = userObj => {
+	telegramDbCollection.insertOne(userObj, (err, result) => {
+		if (err) { console.log("Error:", err); }
+		console.log("Stored telegram subscriber in DB: ", userObj);
+	});
+};
+
+const updateTelegramSubscriberInDb = telegramId => {
+	// TODO
+};
+
+const removeTelegramSubscriberFromDb = telegramId => {
+	telegramDbCollection.deleteOne({ telegramId : telegramId }, (err, result) => {
+		if (err) { console.log("Error:", err); }
+		console.log('Removed telegram user ' + telegramId + ' from DB');
+	});
+};
+
 const serverLaunchTime = Date.now();
 const blockedTimeAfterLaunch = 5; // seconds
 // when subscribing with ethers.js, sometimes contract events from BEFORE subscribing are
@@ -453,6 +471,7 @@ bot.command('start', ctx => {
 		return;
 	}
 	activeTelegramUsers[id] = {
+		telegramId: id,
 		ethAddress: null,
 		events: {
 			Fin4TokenCreated: true,
@@ -463,6 +482,7 @@ bot.command('start', ctx => {
 			NewMessage: false
 		}
 	};
+	storeTelegramSubscriberInDb(activeTelegramUsers[id]);
 	console.log('Telegram user ' + id + ' has connected');
 	ctx.reply('Welcome to the *FIN4Notifications bot*!\n\nFrom now on you will receive notifications about general events, like the creation of a new token. '
 		+ 'If you also want notifications concerning your account (claim approval etc.), you have to share your public Ethereum address in the format '
@@ -489,6 +509,7 @@ bot.command('stop', ctx => {
 		console.log('Removed linkage of telegram id ' + id + ' with eth address ' + ethAddress);
 	}
 	delete activeTelegramUsers[id];
+	removeTelegramSubscriberFromDb(id);
 	console.log('Telegram user id ' + id + ' has disconnected')
 	ctx.reply('You are now unsubscribed from all contract events.');
 });
