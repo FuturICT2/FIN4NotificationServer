@@ -496,6 +496,7 @@ bot.command('start', ctx => {
 		return;
 	}
 	activeTelegramUsers[id] = {
+		timestampAdded: Date.now(),
 		telegramId: id,
 		ethAddress: null,
 		events: {
@@ -690,6 +691,7 @@ const emailSignup = msg => {
 
 	let newAuthKey = nanoid(10);
 	emailSubscribers[email] = {
+		timestampAdded: Date.now(),
 		email: email,
 		ethAddress: ethAddress,
 		authKey: newAuthKey,
