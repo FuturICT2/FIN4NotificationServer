@@ -514,7 +514,7 @@ bot.command('start', ctx => {
 		+ 'If you also want notifications concerning your account (claim approval etc.), you have to share your public Ethereum address in the format '
 		+ '```\nmy-address 0x...\n```Note that you thereby allow a link to be made between your Telegram Id and your Ethereum address. That info lives '
 		+ 'only in the database of the notification server, but servers can be hacked.'
-		+ '\nMore info on what this means on the site to subscribe by email:\n' + config.THIS_URL
+		+ '\nFinde more info about this on the site to subscribe by email:\n' + config.THIS_URL
 		+ '\n\nUse the /help command to see your subscription status and get more infos.'
 		+ '\nThe /change command describes how to change your subscription.'
 		+ '\nWith /stop you unsubscribe from all subscriptions.'
